@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40437722177024eb0db7fd73bcb627, type: 3}
+  m_Name: Q02_Drop
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizQuestion
+  questionText: "EDM\u3067\u97F3\u697D\u304C\u7206\u767A\u7684\u306B\u76DB\u308A\u4E0A\u304C\u308B\u30D4\u30FC\u30AF\u306E\u3053\u3068\u306F\uFF1F"
+  hiraganaOptions:
+  - "\u3069"
+  - "\u308D"
+  - "\u3063"
+  - "\u3077"
+  - "\u307F"
+  - "\u306A"
+  - "\u3064"
+  - "\u304B"
+  correctAnswer: "\u3069\u308D\u3063\u3077"

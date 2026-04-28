@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965e66a7466ffd2408f2826afa8cfcfa, type: 3}
+  m_Name: QuizDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizDatabase
+  questions:
+  - {fileID: 11400000, guid: 575606609c5742f4c8701a604cf7602a, type: 2}
+  - {fileID: 11400000, guid: af1252c0feab3e54fb540cb8e31da4de, type: 2}
+  - {fileID: 11400000, guid: 86457a02203cbfe4684f7d0ab8e468d6, type: 2}
+  - {fileID: 11400000, guid: e0907e30af7effb45ba78c9c42909c70, type: 2}
+  - {fileID: 11400000, guid: 939942a611f776d47bb0b83f22ae8f4d, type: 2}

@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/common.uss" />
+    <Style src="../Styles/title-panel.uss" />
+
+    <ui:VisualElement name="title-root" class="title-root">
+
+        <!-- ゲームタイトル -->
+        <ui:Label class="game-title-main" text="ばくれつ" />
+        <ui:Label class="game-title-sub" text="クイズしてる" />
+
+        <!-- キャッチコピー -->
+        <ui:Label class="catch-copy" text="BPMに合わせて 答えよ！" />
+
+        <!-- スタートボタン -->
+        <ui:Button name="start-button" class="start-button" text="START!" />
+
+    </ui:VisualElement>
+</ui:UXML>

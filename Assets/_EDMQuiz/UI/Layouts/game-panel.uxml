@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <Style src="../Styles/common.uss" />
+    <Style src="../Styles/game-panel.uss" />
+
+    <!-- ベース: フルスクリーン背景 (BPM パルス対象) -->
+    <ui:VisualElement name="background-panel" class="background-panel">
+
+        <!-- 不正解フラッシュ用オーバーレイ (透明で待機) -->
+        <ui:VisualElement name="blue-overlay" class="blue-overlay" />
+
+        <!-- 正解テキスト (DOScale アニメ対象、通常は scale 0) -->
+        <ui:Label name="correct-label" class="correct-label" text="正解！" />
+
+        <!-- 問題文 -->
+        <ui:Label name="question-text" class="question-text" text="〇〇〇〇〇〇〇〇〇〇" />
+
+        <!-- 回答セル (4 マス) -->
+        <ui:VisualElement name="answer-cells" class="answer-cells">
+            <ui:Label class="answer-cell" text="" />
+            <ui:Label class="answer-cell" text="" />
+            <ui:Label class="answer-cell" text="" />
+            <ui:Label class="answer-cell" text="" />
+        </ui:VisualElement>
+
+        <!-- ひらがなボタン (BuildHiraganaButtons() で動的生成) -->
+        <ui:VisualElement name="hiragana-buttons" class="hiragana-buttons" />
+
+        <!-- 操作ボタン列 -->
+        <ui:VisualElement class="control-buttons">
+            <ui:Button name="backspace-button" class="control-button backspace-button" text="⌫ 消す" />
+            <ui:Button name="confirm-button" class="control-button confirm-button" text="決定！" />
+        </ui:VisualElement>
+
+        <!-- 結果画面 (GameEnd フェーズで表示、それまで非表示) -->
+        <ui:VisualElement name="result-root" class="result-root" style="display: none;">
+            <ui:Label class="result-title" text="結果発表" />
+            <ui:Label name="score-label" class="score-label" text="0" />
+            <ui:Label class="score-unit" text="点" />
+            <ui:Label name="rank-label" class="rank-label" text="" />
+            <ui:Label name="rank-text-label" class="rank-text-label" text="" />
+            <ui:Button name="retry-button" class="retry-button" text="もう一度！" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

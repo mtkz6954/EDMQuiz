@@ -1,0 +1,152 @@
+/* ======================================================
+   common.uss  —  EDMQuiz 共通スタイル
+   カラーパレット: 深夜のクラブ × ネオン
+====================================================== */
+
+/* ─── 変数定義 (UI Toolkit は CSS カスタムプロパティ非対応のため定数コメントで管理) ───
+   --bg-dark     : #0d0d1a
+   --neon-pink   : #ff3c8e
+   --neon-cyan   : #00f0ff
+   --neon-yellow : #ffe600
+   --text-white  : #ffffff
+   --text-dim    : #aaaacc
+─────────────────────────────────────────────────────── */
+
+/* ─── Root ─── */
+.background-panel {
+    flex-grow: 1;
+    background-color: rgb(13, 13, 26);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px;
+}
+
+/* ─── オーバーレイ ─── */
+.blue-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 80, 255, 0);
+}
+
+/* ─── 正解ラベル ─── */
+.correct-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40%;
+    -unity-text-align: middle-center;
+    font-size: 72px;
+    color: rgb(255, 230, 0);
+    -unity-font-style: bold;
+    scale: 0 0;
+}
+
+/* ─── 問題文 ─── */
+.question-text {
+    font-size: 22px;
+    color: rgb(200, 200, 220);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-top: 16px;
+    margin-bottom: 20px;
+    max-width: 90%;
+}
+
+/* ─── 回答セル行 ─── */
+.answer-cells {
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.answer-cell {
+    width: 64px;
+    height: 64px;
+    border-width: 2px;
+    border-color: rgb(0, 240, 255);
+    border-radius: 8px;
+    margin: 4px;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    background-color: rgba(0, 240, 255, 0.08);
+}
+
+/* ─── ひらがなボタン群 ─── */
+.hiragana-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 340px;
+    margin-bottom: 16px;
+}
+
+.hiragana-button {
+    width: 68px;
+    height: 68px;
+    margin: 5px;
+    font-size: 26px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(255, 60, 142, 0.25);
+    border-color: rgb(255, 60, 142);
+    border-width: 2px;
+    border-radius: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    transition-property: background-color, scale;
+    transition-duration: 0.1s;
+}
+
+.hiragana-button:hover {
+    background-color: rgba(255, 60, 142, 0.5);
+}
+
+.hiragana-button:active {
+    background-color: rgb(255, 60, 142);
+    scale: 0.92 0.92;
+}
+
+.hiragana-button:disabled {
+    opacity: 0.3;
+}
+
+/* ─── コントロールボタン行 ─── */
+.control-buttons {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.control-button {
+    height: 52px;
+    margin: 6px;
+    border-radius: 12px;
+    font-size: 20px;
+    -unity-font-style: bold;
+    border-width: 2px;
+}
+
+.backspace-button {
+    min-width: 120px;
+    color: rgb(200, 200, 220);
+    background-color: rgba(100, 100, 140, 0.3);
+    border-color: rgb(100, 100, 140);
+}
+
+.confirm-button {
+    min-width: 140px;
+    color: rgb(13, 13, 26);
+    background-color: rgb(255, 230, 0);
+    border-color: rgb(255, 230, 0);
+}
+
+.confirm-button:disabled {
+    background-color: rgba(255, 230, 0, 0.2);
+    color: rgba(255, 230, 0, 0.4);
+    border-color: rgba(255, 230, 0, 0.3);
+}

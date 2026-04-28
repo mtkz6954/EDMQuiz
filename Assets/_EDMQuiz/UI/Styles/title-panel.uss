@@ -1,0 +1,54 @@
+/* ======================================================
+   title-panel.uss  —  タイトル画面スタイル
+====================================================== */
+
+.title-root {
+    flex-grow: 1;
+    background-color: rgb(13, 13, 26);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-title-main {
+    font-size: 64px;
+    color: rgb(255, 60, 142);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.game-title-sub {
+    font-size: 40px;
+    color: rgb(0, 240, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 32px;
+}
+
+.catch-copy {
+    font-size: 18px;
+    color: rgb(170, 170, 204);
+    -unity-text-align: middle-center;
+    margin-bottom: 48px;
+}
+
+.start-button {
+    min-width: 220px;
+    height: 64px;
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(13, 13, 26);
+    background-color: rgb(255, 230, 0);
+    border-color: rgb(255, 230, 0);
+    border-radius: 20px;
+    border-width: 0;
+}
+
+.start-button:hover {
+    background-color: rgb(255, 245, 100);
+}
+
+.start-button:active {
+    scale: 0.95 0.95;
+}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40437722177024eb0db7fd73bcb627, type: 3}
+  m_Name: Q05_Stage
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizQuestion
+  questionText: "DJ\u3084\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u304C\u6F14\u594F\u30FB\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9\u3059\u308B\u5834\u6240\u306F\uFF1F"
+  hiraganaOptions:
+  - "\u3059"
+  - "\u3066"
+  - "\u30FC"
+  - "\u3058"
+  - "\u304F"
+  - "\u307F"
+  - "\u3089"
+  - "\u307B"
+  correctAnswer: "\u3059\u3066\u30FC\u3058"

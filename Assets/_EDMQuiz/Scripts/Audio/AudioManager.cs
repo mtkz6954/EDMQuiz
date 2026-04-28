@@ -46,8 +46,15 @@ namespace EDMQuiz
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            _bgmPlayer = new CriAtomExPlayer();
-            _sePlayer  = new CriAtomExPlayer();
+            try
+            {
+                _bgmPlayer = new CriAtomExPlayer();
+                _sePlayer  = new CriAtomExPlayer();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[AudioManager] CRI ADX 未初期化 — 音なしフォールバックで動作 ({e.Message})");
+            }
         }
 
         void OnDestroy()
@@ -63,20 +70,32 @@ namespace EDMQuiz
         [Button("Play BGM (Editor Test)")]
         public void PlayBGM()
         {
-            var acb = CriAtom.GetAcb(_bgmCueSheetName);
-            if (acb == null)
+            try
             {
-                Debug.LogWarning($"[AudioManager] CueSheet '{_bgmCueSheetName}' 未ロード — フォールバック動作");
-                _useFallback = true;
-                _fallbackStartTime = Time.unscaledTimeAsDouble;
+                var acb = CriAtom.GetAcb(_bgmCueSheetName);
+                if (acb == null)
+                {
+                    Debug.LogWarning($"[AudioManager] CueSheet '{_bgmCueSheetName}' 未ロード — フォールバック動作");
+                    UseFallback();
+                    return;
+                }
+                _bgmPlayer.SetCue(acb, _bgmCueName);
+                _bgmPlayback = _bgmPlayer.Start();
                 IsBgmPlaying = true;
-                return;
+                _useFallback = false;
             }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[AudioManager] CRI ADX 未初期化 — フォールバック動作 ({e.Message})");
+                UseFallback();
+            }
+        }
 
-            _bgmPlayer.SetCue(acb, _bgmCueName);
-            _bgmPlayback = _bgmPlayer.Start();
+        private void UseFallback()
+        {
+            _useFallback = true;
+            _fallbackStartTime = Time.unscaledTimeAsDouble;
             IsBgmPlaying = true;
-            _useFallback = false;
         }
 
         public void StopBGM()
@@ -88,10 +107,14 @@ namespace EDMQuiz
         public void PlaySE(string cueName)
         {
             if (string.IsNullOrEmpty(cueName)) return;
-            var acb = CriAtom.GetAcb(_seCueSheetName);
-            if (acb == null) return;
-            _sePlayer.SetCue(acb, cueName);
-            _sePlayer.Start();
+            try
+            {
+                var acb = CriAtom.GetAcb(_seCueSheetName);
+                if (acb == null) return;
+                _sePlayer.SetCue(acb, cueName);
+                _sePlayer.Start();
+            }
+            catch (System.Exception) { /* CRI 未初期化時は無音で続行 */ }
         }
 
         public void PlayCorrectSE()   => PlaySE(_seCorrectCueName);

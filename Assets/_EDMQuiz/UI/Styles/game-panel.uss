@@ -1,0 +1,74 @@
+/* ======================================================
+   game-panel.uss  —  ゲーム画面固有スタイル
+====================================================== */
+
+/* ─── 結果画面 ─── */
+.result-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(13, 13, 26, 0.95);
+}
+
+.result-title {
+    font-size: 28px;
+    color: rgb(170, 170, 204);
+    margin-bottom: 16px;
+    -unity-text-align: middle-center;
+}
+
+.score-label {
+    font-size: 80px;
+    color: rgb(255, 230, 0);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 0;
+}
+
+.score-unit {
+    font-size: 32px;
+    color: rgb(255, 230, 0);
+    -unity-text-align: middle-center;
+    margin-bottom: 24px;
+}
+
+.rank-label {
+    font-size: 100px;
+    color: rgb(255, 60, 142);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    scale: 0 0;
+}
+
+.rank-text-label {
+    font-size: 36px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 32px;
+}
+
+.retry-button {
+    min-width: 200px;
+    height: 60px;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(13, 13, 26);
+    background-color: rgb(0, 240, 255);
+    border-color: rgb(0, 240, 255);
+    border-radius: 16px;
+    border-width: 0;
+}
+
+.retry-button:hover {
+    background-color: rgb(100, 248, 255);
+}
+
+.retry-button:active {
+    scale: 0.95 0.95;
+}

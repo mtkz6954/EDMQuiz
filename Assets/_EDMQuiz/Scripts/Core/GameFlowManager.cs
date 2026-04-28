@@ -31,6 +31,11 @@ namespace EDMQuiz
             Instance = this;
         }
 
+        void Start()
+        {
+            StartGame();
+        }
+
         [Button("Start Game (Editor Test)")]
         public void StartGame()
         {
