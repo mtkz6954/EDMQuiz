@@ -1,77 +1,118 @@
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using DG.Tweening;
+using UnityEngine.UIElements;
 
 namespace EDMQuiz
 {
+    /// <summary>UI Toolkit でひらがな入力 UI を構築・管理する</summary>
     public class HiraganaInputUI : MonoBehaviour
     {
-        [Header("UI References")]
-        [SerializeField] private Transform _buttonContainer;
-        [SerializeField] private GameObject _hiraganaButtonPrefab;
-        [SerializeField] private TextMeshProUGUI[] _answerCells; // 4要素固定
-        [SerializeField] private Button _backspaceButton;
-        [SerializeField] private Button _confirmButton;
+        [SerializeField] private UIDocument _uiDocument;
+
+        private VisualElement _root;
+        private Label _questionText;
+        private Label[] _answerCells;
+        private VisualElement _buttonContainer;
+        private Button _backspaceButton;
+        private Button _confirmButton;
 
         private readonly List<string> _inputBuffer = new();
         private readonly List<Button> _hiraganaButtons = new();
-        private float _beatInterval;
 
         void OnEnable()
         {
-            GameFlowManager.OnPhaseChanged    += HandlePhaseChanged;
-            GameFlowManager.OnQuestionIndexChanged += LoadQuestion;
-            BpmClock.OnBeat                   += HandleBeat;
+            if (_uiDocument == null)
+            {
+                Debug.LogError("[HiraganaInputUI] UIDocument 未設定");
+                return;
+            }
+            _root = _uiDocument.rootVisualElement;
+            _questionText    = _root.Q<Label>("question-text");
+            _buttonContainer = _root.Q<VisualElement>("hiragana-buttons");
+            _backspaceButton = _root.Q<Button>("backspace-button");
+            _confirmButton   = _root.Q<Button>("confirm-button");
+
+            var cellsContainer = _root.Q<VisualElement>("answer-cells");
+            _answerCells = cellsContainer.Query<Label>(className: "answer-cell").ToList().ToArray();
+
+            _backspaceButton.clicked += OnBackspacePressed;
+            _confirmButton.clicked   += OnConfirmPressed;
+
+            GameFlowManager.OnPhaseChanged
+                .Subscribe(HandlePhaseChanged)
+                .AddTo(this);
+
+            BpmClock.OnBeat
+                .Where(_ => GameFlowManager.Instance != null
+                         && GameFlowManager.Instance.CurrentPhase == GamePhase.BuildUp)
+                .Subscribe(_ => PulseAllButtons())
+                .AddTo(this);
+
+            SetInputEnabled(false);
+            UpdateAnswerDisplay();
+            UpdateConfirmButton();
         }
 
         void OnDisable()
         {
-            GameFlowManager.OnPhaseChanged    -= HandlePhaseChanged;
-            GameFlowManager.OnQuestionIndexChanged -= LoadQuestion;
-            BpmClock.OnBeat                   -= HandleBeat;
+            if (_backspaceButton != null) _backspaceButton.clicked -= OnBackspacePressed;
+            if (_confirmButton   != null) _confirmButton.clicked   -= OnConfirmPressed;
         }
 
-        void Start()
+        private void HandlePhaseChanged(GamePhase phase)
         {
-            _beatInterval = 60f / GameConstants.BPM;
-            _backspaceButton.onClick.AddListener(OnBackspacePressed);
-            _confirmButton.onClick.AddListener(OnConfirmPressed);
-            SetInputEnabled(false);
+            switch (phase)
+            {
+                case GamePhase.Question:
+                    LoadQuestion();
+                    SetInputEnabled(false);
+                    break;
+                case GamePhase.BuildUp:
+                    SetInputEnabled(true);
+                    break;
+                default:
+                    SetInputEnabled(false);
+                    break;
+            }
         }
 
-        private void LoadQuestion(int index)
+        private void LoadQuestion()
         {
-            // バッファと表示をリセット。ボタン生成は QuestionDisplay が BuildButtons() 経由で行う
             _inputBuffer.Clear();
             UpdateAnswerDisplay();
             UpdateConfirmButton();
+
+            var q = GameFlowManager.Instance?.CurrentQuestion;
+            if (q == null) return;
+
+            _questionText.text = q.questionText;
+            BuildHiraganaButtons(q.hiraganaOptions);
         }
 
-        public void BuildButtons(string[] options)
+        private void BuildHiraganaButtons(string[] options)
         {
-            foreach (Transform child in _buttonContainer) Destroy(child.gameObject);
+            _buttonContainer.Clear();
             _hiraganaButtons.Clear();
+            if (options == null) return;
 
             foreach (var ch in options)
             {
-                var go = Instantiate(_hiraganaButtonPrefab, _buttonContainer);
-                var btn = go.GetComponent<Button>();
-                var label = go.GetComponentInChildren<TextMeshProUGUI>();
-                label.text = ch;
                 string captured = ch;
-                btn.onClick.AddListener(() => OnHiraganaButtonPressed(captured));
+                var btn = new Button(() => OnHiraganaPressed(captured)) { text = ch };
+                btn.AddToClassList("hiragana-button");
+                _buttonContainer.Add(btn);
                 _hiraganaButtons.Add(btn);
             }
         }
 
-        private void OnHiraganaButtonPressed(string character)
+        private void OnHiraganaPressed(string kana)
         {
-            if (_inputBuffer.Count >= GameConstants.MAX_INPUT_LENGTH) return;
-            _inputBuffer.Add(character);
+            if (_inputBuffer.Count >= GameConstants.ANSWER_LENGTH) return;
+            _inputBuffer.Add(kana);
             UpdateAnswerDisplay();
             UpdateConfirmButton();
+            AudioManager.Instance?.PlayUiTapSE();
         }
 
         private void OnBackspacePressed()
@@ -84,41 +125,38 @@ namespace EDMQuiz
 
         private void OnConfirmPressed()
         {
-            if (_inputBuffer.Count < GameConstants.MAX_INPUT_LENGTH) return;
+            if (_inputBuffer.Count < GameConstants.ANSWER_LENGTH) return;
             string answer = string.Concat(_inputBuffer);
-            GameFlowManager.Instance.SubmitAnswer(answer);
+            GameFlowManager.Instance?.ConfirmAnswer(answer);
         }
 
         private void UpdateAnswerDisplay()
         {
+            if (_answerCells == null) return;
             for (int i = 0; i < _answerCells.Length; i++)
                 _answerCells[i].text = i < _inputBuffer.Count ? _inputBuffer[i] : "";
         }
 
         private void UpdateConfirmButton()
         {
-            _confirmButton.interactable = _inputBuffer.Count == GameConstants.MAX_INPUT_LENGTH;
+            if (_confirmButton == null) return;
+            bool ready = _inputBuffer.Count == GameConstants.ANSWER_LENGTH
+                      && GameFlowManager.Instance?.CurrentPhase == GamePhase.BuildUp;
+            _confirmButton.SetEnabled(ready);
         }
 
         private void SetInputEnabled(bool enabled)
         {
-            foreach (var btn in _hiraganaButtons) btn.interactable = enabled;
-            _backspaceButton.interactable = enabled;
+            foreach (var btn in _hiraganaButtons) btn.SetEnabled(enabled);
+            if (_backspaceButton != null) _backspaceButton.SetEnabled(enabled);
+            UpdateConfirmButton();
         }
 
-        private void HandlePhaseChanged(GamePhase phase)
+        private void PulseAllButtons()
         {
-            SetInputEnabled(phase == GamePhase.BuildUp);
-        }
-
-        private void HandleBeat()
-        {
+            float duration = GameConstants.GetBeatDuration() * GameConstants.BUTTON_PULSE_DURATION_RATIO;
             foreach (var btn in _hiraganaButtons)
-                btn.transform.DOPunchScale(
-                    Vector3.one * GameConstants.BUTTON_PULSE_SCALE,
-                    _beatInterval * GameConstants.BUTTON_PULSE_DURATION_RATIO,
-                    1, 0
-                );
+                btn.DOPulse(GameConstants.BUTTON_PULSE_SCALE, duration);
         }
     }
 }

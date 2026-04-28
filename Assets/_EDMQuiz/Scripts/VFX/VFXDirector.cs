@@ -1,103 +1,150 @@
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using R3;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace EDMQuiz
 {
+    /// <summary>正解・不正解・ビート同期の演出を統括</summary>
     public class VFXDirector : MonoBehaviour
     {
-        [Header("正解演出")]
+        [Header("World VFX")]
         [SerializeField] private ParticleSystem _confettiParticle;
         [SerializeField] private Transform      _mirrorBallTransform;
         [SerializeField] private Animator       _funnymonAnimator;
 
-        [Header("不正解演出")]
-        [SerializeField] private CanvasGroup    _screenOverlay;  // 青ざめオーバーレイ
+        [Header("UI VFX (UI Toolkit)")]
+        [SerializeField] private UIDocument _uiDocument;
+        [SerializeField] private string _backgroundPanelName = "background-panel";
+        [SerializeField] private string _blueOverlayName     = "blue-overlay";
+        [SerializeField] private string _correctLabelName    = "correct-label";
 
-        [Header("共通")]
-        [SerializeField] private Transform      _backgroundTransform;
+        private VisualElement _backgroundPanel;
+        private VisualElement _blueOverlay;
+        private Label _correctLabel;
 
-        private float _beatInterval;
-        private bool  _isPlayingSequence;
+        private CancellationTokenSource _vfxCts;
         private Tween _mirrorBallTween;
 
         void OnEnable()
         {
-            AnswerJudgment.OnJudged += HandleJudgment; // TODO: staticイベント化
-            BpmClock.OnBeat        += HandleBeat;
+            if (_uiDocument != null)
+            {
+                var root = _uiDocument.rootVisualElement;
+                _backgroundPanel = root.Q<VisualElement>(_backgroundPanelName);
+                _blueOverlay     = root.Q<VisualElement>(_blueOverlayName);
+                _correctLabel    = root.Q<Label>(_correctLabelName);
+            }
+
+            AnswerJudgment.OnJudged
+                .Subscribe(HandleJudged)
+                .AddTo(this);
+
+            BpmClock.OnBeat
+                .Where(_ => GameFlowManager.Instance != null
+                         && GameFlowManager.Instance.CurrentPhase == GamePhase.BuildUp)
+                .Subscribe(_ => PulseBackground())
+                .AddTo(this);
+
+            GameFlowManager.OnPhaseChanged
+                .Where(p => p == GamePhase.Next)
+                .Subscribe(_ => CancelVfx())
+                .AddTo(this);
         }
 
         void OnDisable()
         {
-            AnswerJudgment.OnJudged -= HandleJudgment;
-            BpmClock.OnBeat        -= HandleBeat;
+            CancelVfx();
         }
 
-        void Start()
+        private void HandleJudged(bool isCorrect)
         {
-            _beatInterval = 60f / GameConstants.BPM;
+            CancelVfx();
+            _vfxCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+            if (isCorrect) PlayCorrectSequenceAsync(_vfxCts.Token).Forget();
+            else PlayIncorrectSequenceAsync(_vfxCts.Token).Forget();
         }
 
-        private void HandleJudgment(bool isCorrect)
+        private async UniTaskVoid PlayCorrectSequenceAsync(CancellationToken ct)
         {
-            if (_isPlayingSequence) return;
-            StartCoroutine(isCorrect ? PlayCorrectSequence() : PlayIncorrectSequence());
+            try
+            {
+                _confettiParticle?.Play();
+                _funnymonAnimator?.SetTrigger("CorrectDance");
+                StartMirrorBall();
+                AudioManager.Instance?.PlayCorrectSE();
+
+                if (Camera.main != null)
+                {
+                    Camera.main.transform.DOShakePosition(
+                        GameConstants.SHAKE_DURATION,
+                        GameConstants.SHAKE_STRENGTH,
+                        GameConstants.SHAKE_VIBRATO);
+                }
+
+                if (_correctLabel != null)
+                {
+                    _correctLabel
+                        .DOScale(GameConstants.CORRECT_SCALE_PEAK, GameConstants.CORRECT_SCALE_DURATION)
+                        .SetEase(Ease.OutBack);
+                    await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.CORRECT_SCALE_DURATION), cancellationToken: ct);
+                }
+
+                float remain = GameConstants.DROP_REVEAL_SEC - GameConstants.CORRECT_SCALE_DURATION;
+                if (remain > 0f)
+                    await UniTask.Delay(TimeSpan.FromSeconds(remain), cancellationToken: ct);
+
+                _correctLabel?.DOScale(1f, 0.2f);
+                StopMirrorBall();
+            }
+            catch (OperationCanceledException) { }
         }
 
-        private IEnumerator PlayCorrectSequence()
+        private async UniTaskVoid PlayIncorrectSequenceAsync(CancellationToken ct)
         {
-            _isPlayingSequence = true;
+            try
+            {
+                _funnymonAnimator?.SetTrigger("FailDance");
+                AudioManager.Instance?.PlayIncorrectSE();
 
-            _confettiParticle?.Play();
-            StartMirrorBall();
-            _funnymonAnimator?.SetTrigger("CorrectDance");
-            Camera.main?.transform.DOShakePosition(
-                GameConstants.SCREEN_SHAKE_DURATION,
-                GameConstants.SCREEN_SHAKE_STRENGTH
-            );
-            // AudioManager.Instance.PlaySE(seCorrect); // CRI ADX有効化後に解除
+                if (Camera.main != null)
+                {
+                    Camera.main.transform.DOShakePosition(
+                        GameConstants.SHAKE_DURATION,
+                        GameConstants.SHAKE_STRENGTH * 1.5f,
+                        GameConstants.SHAKE_VIBRATO);
+                }
 
-            yield return new WaitForSeconds(GameConstants.DROP_REVEAL_SEC);
+                _blueOverlay?.DOFade(GameConstants.BLUE_OVERLAY_ALPHA, 0.2f);
 
-            StopMirrorBall();
-            _isPlayingSequence = false;
+                await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: ct);
+                _blueOverlay?.DOFade(0f, 0.5f);
+
+                float remain = GameConstants.DROP_REVEAL_SEC - 0.7f;
+                if (remain > 0f)
+                    await UniTask.Delay(TimeSpan.FromSeconds(remain), cancellationToken: ct);
+            }
+            catch (OperationCanceledException) { }
         }
 
-        private IEnumerator PlayIncorrectSequence()
+        private void PulseBackground()
         {
-            _isPlayingSequence = true;
-
-            _funnymonAnimator?.SetTrigger("FailDance");
-            // AudioManager.Instance.PlaySE(seIncorrect);
-
-            if (_screenOverlay != null)
-                _screenOverlay.DOFade(GameConstants.BLUE_OVERLAY_ALPHA, 0.2f);
-
-            // 一瞬静止（DOTweenはSetUpdate(true)でtimeScaleに依存しない）
-            yield return new WaitForSecondsRealtime(GameConstants.FREEZE_DURATION);
-
-            yield return new WaitForSeconds(1.5f);
-
-            if (_screenOverlay != null)
-                _screenOverlay.DOFade(0f, 0.5f);
-
-            yield return new WaitForSeconds(GameConstants.DROP_REVEAL_SEC - 1.5f);
-
-            _isPlayingSequence = false;
-        }
-
-        private void HandleBeat()
-        {
-            _backgroundTransform?.DOPunchScale(Vector3.one * 0.02f, _beatInterval * 0.3f, 1, 0);
+            if (_backgroundPanel == null) return;
+            float duration = GameConstants.GetBeatDuration() * GameConstants.BEAT_PULSE_DURATION_RATIO;
+            _backgroundPanel.DOPulse(GameConstants.BEAT_PULSE_SCALE, duration);
         }
 
         private void StartMirrorBall()
         {
             if (_mirrorBallTransform == null) return;
-            float degreesPerBeat = 360f / 4;  // 4拍で1回転
+            _mirrorBallTween?.Kill();
             _mirrorBallTween = _mirrorBallTransform
-                .DORotate(new Vector3(0, degreesPerBeat, 0), _beatInterval, RotateMode.LocalAxisAdd)
+                .DORotate(new Vector3(0, 360, 0),
+                          GameConstants.GetBeatDuration() * 4f,
+                          RotateMode.FastBeyond360)
                 .SetLoops(-1, LoopType.Restart)
                 .SetEase(Ease.Linear);
         }
@@ -105,6 +152,17 @@ namespace EDMQuiz
         private void StopMirrorBall()
         {
             _mirrorBallTween?.Kill();
+            _mirrorBallTween = null;
+        }
+
+        private void CancelVfx()
+        {
+            _vfxCts?.Cancel();
+            _vfxCts?.Dispose();
+            _vfxCts = null;
+            if (_correctLabel != null) DOTween.Kill(_correctLabel);
+            if (_blueOverlay != null)  DOTween.Kill(_blueOverlay);
+            StopMirrorBall();
         }
     }
 }

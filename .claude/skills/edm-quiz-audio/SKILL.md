@@ -5,6 +5,18 @@ description: CRI ADX LE + Asset Support Addon (OnMemory) による BGM/SE 再生
 
 # audio — CRI ADX 音声システム
 
+## CRI ADX の API 詳細を見るには
+
+| やりたいこと | 参照 Skill |
+|------------|-----------|
+| CRI ADX 全体像 | `cri-adx-overview` |
+| ACB アセット化・OnMemory | `cri-adx-asset-support` |
+| CriAtomExPlayer 再生制御 | `cri-adx-playback` |
+| BGM 再生時刻取得（リズム同期）| `cri-adx-bpm-sync` |
+| WebGL ビルド設定・unityroom 制約 | `cri-adx-webgl` |
+
+このスキルは EDMQuiz 固有の AudioManager 実装方針のみ扱う。
+
 ## 責務
 
 CRI ADX LE で BGM/SE を WebGL/OnMemory 方式で再生する `AudioManager` シングルトン。BPM 同期の基準クロック（`CriAtomExPlayback.GetTime()`）も提供する。
@@ -110,11 +122,14 @@ namespace EDMQuiz
         public void PlayUiTapSE()     => PlaySE(_seUiTapCue);
         public void PlayResultSE()    => PlaySE(_seResultCue);
 
-        /// <summary>BGM 再生開始からの経過秒数（BpmClock の基準）</summary>
-        public float GetBGMElapsedSeconds()
+        /// <summary>BGM 再生開始からの経過秒数（BpmClock の基準・リズム同期用）</summary>
+        /// <remarks>GetTime() ではなく GetTimeSyncedWithAudio() を使う（cri-adx-bpm-sync 参照）</remarks>
+        public double GetBGMElapsedSeconds()
         {
-            if (!IsBgmPlaying) return 0f;
-            return _bgmPlayback.GetTime() / 1000f;
+            if (!IsBgmPlaying) return 0.0;
+            if (_bgmPlayback.GetStatus() != CriAtomExPlayback.Status.Playing) return 0.0;
+            long us = _bgmPlayback.GetTimeSyncedWithAudio();
+            return us / 1_000_000.0;  // マイクロ秒 → 秒
         }
     }
 }
@@ -148,11 +163,11 @@ Cue Reference のシリアライズは `CriAtomCueReference` を `[SerializeFiel
 ## フォールバック（BGM 読み込み失敗）
 
 ```csharp
-public float GetBGMElapsedSeconds()
+public double GetBGMElapsedSeconds()
 {
     if (!IsBgmPlaying)
-        return Time.unscaledTime - _bgmStartTime;  // フォールバック
-    return _bgmPlayback.GetTime() / 1000f;
+        return Time.unscaledTimeAsDouble - _bgmStartTime;  // フォールバック
+    return _bgmPlayback.GetTimeSyncedWithAudio() / 1_000_000.0;
 }
 ```
 

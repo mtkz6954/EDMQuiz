@@ -1,64 +1,70 @@
-using System;
+using R3;
 using UnityEngine;
 
 namespace EDMQuiz
 {
+    /// <summary>BGM 再生時刻を基準にビート・小節境界を検出して R3 Subject で発火</summary>
     public class BpmClock : MonoBehaviour
     {
-        public static event Action OnBeat;
-        public static event Action OnBuildUpStart;
-        public static event Action OnDropStart;
+        public static BpmClock Instance { get; private set; }
 
-        private float _beatInterval;
-        private float _nextBeatTime;
-        private bool  _buildUpFired;
-        private bool  _dropFired;
-        private bool  _isRunning;
+        public double ElapsedSeconds { get; private set; }
+        public double ElapsedBeats   { get; private set; }
+        public int    CurrentBeat    { get; private set; }
+        public int    CurrentBar     { get; private set; }
 
-        void Start()
+        private static readonly Subject<Unit> _onBeatSubject = new();
+        private static readonly Subject<Unit> _onBarSubject  = new();
+        public static Observable<Unit> OnBeat => _onBeatSubject;
+        public static Observable<Unit> OnBar  => _onBarSubject;
+
+        private bool _isRunning;
+        private double _prevElapsedBeats;
+
+        void Awake()
         {
-            _beatInterval = 60f / GameConstants.BPM;
+            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+            Instance = this;
         }
 
-        /// <summary>GameFlowManager.StartGame() から呼ばれる</summary>
         public void StartClock()
         {
-            _buildUpFired = false;
-            _dropFired    = false;
-            _isRunning    = true;
-            _nextBeatTime = AudioManager.Instance.BgmStartDspTime + _beatInterval;
+            _isRunning = true;
+            _prevElapsedBeats = 0.0;
+            ElapsedSeconds = 0.0;
+            ElapsedBeats   = 0.0;
+            CurrentBeat    = 0;
+            CurrentBar     = 0;
         }
 
-        /// <summary>次の問題への遷移時にリセット</summary>
-        public void ResetClock()
-        {
-            _buildUpFired = false;
-            _dropFired    = false;
-            _nextBeatTime = AudioManager.Instance.BgmStartDspTime + _beatInterval;
-        }
+        public void StopClock() => _isRunning = false;
 
         void Update()
         {
             if (!_isRunning || AudioManager.Instance == null) return;
 
-            float currentTime = AudioManager.Instance.GetCurrentDspTime();
+            ElapsedSeconds = AudioManager.Instance.GetBGMElapsedSeconds();
 
-            while (currentTime >= _nextBeatTime - AudioManager.Instance.BgmStartDspTime)
-            {
-                OnBeat?.Invoke();
-                _nextBeatTime += _beatInterval;
-            }
+            double beatDuration = GameConstants.GetBeatDuration();
+            if (beatDuration <= 0.0) return;
 
-            if (!_buildUpFired && currentTime >= GameConstants.BUILDUP_START_SEC)
-            {
-                OnBuildUpStart?.Invoke();
-                _buildUpFired = true;
-            }
+            ElapsedBeats = ElapsedSeconds / beatDuration;
+            CurrentBeat  = (int)ElapsedBeats % GameConstants.BEATS_PER_BAR;
+            CurrentBar   = (int)(ElapsedBeats / GameConstants.BEATS_PER_BAR);
 
-            if (!_dropFired && currentTime >= GameConstants.DROP_START_SEC)
+            DetectBoundaries();
+            _prevElapsedBeats = ElapsedBeats;
+        }
+
+        private void DetectBoundaries()
+        {
+            int prevBeatInt = (int)_prevElapsedBeats;
+            int currBeatInt = (int)ElapsedBeats;
+            if (currBeatInt > prevBeatInt)
             {
-                OnDropStart?.Invoke();
-                _dropFired = true;
+                _onBeatSubject.OnNext(Unit.Default);
+                if (currBeatInt % GameConstants.BEATS_PER_BAR == 0)
+                    _onBarSubject.OnNext(Unit.Default);
             }
         }
     }

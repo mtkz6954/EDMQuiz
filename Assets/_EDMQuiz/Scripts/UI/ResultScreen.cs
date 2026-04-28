@@ -1,93 +1,87 @@
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using R3;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace EDMQuiz
 {
+    /// <summary>結果画面 UI (UI Toolkit)。GameEnd フェーズで表示</summary>
     public class ResultScreen : MonoBehaviour
     {
-        [SerializeField] private GameObject _resultPanel;
-        [SerializeField] private TextMeshProUGUI _scoreText;
-        [SerializeField] private TextMeshProUGUI _rankText;
-        [SerializeField] private TextMeshProUGUI _rankLabelText;
-        [SerializeField] private Button _replayButton;
+        [SerializeField] private UIDocument _uiDocument;
+        [SerializeField] private string _titleSceneName = "TitleScene";
+
+        private VisualElement _root;
+        private Label _scoreLabel;
+        private Label _rankLabel;
+        private Label _rankTextLabel;
+        private Button _retryButton;
 
         void OnEnable()
         {
-            GameFlowManager.OnGameEnd += ShowResult;
-            _replayButton.onClick.AddListener(OnReplayPressed);
+            if (_uiDocument == null) return;
+            var doc = _uiDocument.rootVisualElement;
+            _root          = doc.Q<VisualElement>("result-root");
+            _scoreLabel    = doc.Q<Label>("score-label");
+            _rankLabel     = doc.Q<Label>("rank-label");
+            _rankTextLabel = doc.Q<Label>("rank-text-label");
+            _retryButton   = doc.Q<Button>("retry-button");
+
+            if (_retryButton != null) _retryButton.clicked += OnRetryClicked;
+
+            if (_root != null) _root.style.display = DisplayStyle.None;
+
+            GameFlowManager.OnPhaseChanged
+                .Where(p => p == GamePhase.GameEnd)
+                .Subscribe(_ => ShowAsync(this.GetCancellationTokenOnDestroy()).Forget())
+                .AddTo(this);
         }
 
         void OnDisable()
         {
-            GameFlowManager.OnGameEnd -= ShowResult;
-            _replayButton.onClick.RemoveListener(OnReplayPressed);
+            if (_retryButton != null) _retryButton.clicked -= OnRetryClicked;
         }
 
-        private void ShowResult(int correctCount)
+        private async UniTaskVoid ShowAsync(CancellationToken ct)
         {
-            int score = CalcScore(correctCount);
-            var (rank, label) = CalcRank(score);
-            StartCoroutine(AnimateResult(score, rank, label));
+            if (_root == null) return;
+
+            _root.style.display = DisplayStyle.Flex;
+            _retryButton?.SetEnabled(false);
+
+            _root.style.opacity = 0f;
+            _root.DOFade(1f, 0.5f);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: ct);
+
+            int finalScore = ScoreManager.Instance != null
+                ? ScoreManager.Instance.ExcitementScore
+                : 0;
+
+            _scoreLabel.DOCountUp(0, finalScore, GameConstants.SCORE_COUNTUP_DURATION).SetEase(Ease.OutCubic);
+            await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.SCORE_COUNTUP_DURATION), cancellationToken: ct);
+
+            string rank      = ScoreManager.DetermineRank(finalScore);
+            string rankLabel = ScoreManager.GetRankLabel(rank);
+            _rankLabel.text     = rank;
+            _rankTextLabel.text = rankLabel;
+            _rankLabel.style.scale = new StyleScale(new Scale(Vector3.zero));
+
+            _rankLabel.DOScale(GameConstants.RANK_SCALE_PEAK, GameConstants.RANK_SCALE_DURATION).SetEase(Ease.OutBack);
+            await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.RANK_SCALE_DURATION), cancellationToken: ct);
+            _rankLabel.DOScale(1f, 0.2f);
+
+            AudioManager.Instance?.PlayResultSE();
+            _retryButton?.SetEnabled(true);
         }
 
-        private IEnumerator AnimateResult(int score, string rank, string label)
+        private void OnRetryClicked()
         {
-            _resultPanel.SetActive(true);
-            _replayButton.gameObject.SetActive(false);
-
-            var canvasGroup = _resultPanel.GetComponent<CanvasGroup>();
-            if (canvasGroup != null)
-            {
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1f, 0.5f);
-            }
-
-            yield return new WaitForSeconds(0.5f);
-
-            _rankText.text      = rank;
-            _rankLabelText.text = label;
-            _rankText.transform.DOPunchScale(Vector3.one * 1.0f, 0.5f);
-
-            yield return new WaitForSeconds(0.5f);
-
-            // スコアカウントアップ
-            int current = 0;
-            float elapsed = 0f;
-            float duration = 1.0f;
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                current = Mathf.RoundToInt(Mathf.Lerp(0, score, elapsed / duration));
-                _scoreText.text = $"盛り上がり度: {current}";
-                yield return null;
-            }
-            _scoreText.text = $"盛り上がり度: {score}";
-
-            yield return new WaitForSeconds(0.5f);
-            _replayButton.gameObject.SetActive(true);
-        }
-
-        private void OnReplayPressed()
-        {
-            _resultPanel.SetActive(false);
-            GameFlowManager.Instance.StartGame();
-        }
-
-        private static int CalcScore(int correctCount)
-        {
-            return Mathf.Clamp(correctCount, 0, GameConstants.TOTAL_QUESTIONS) * 100 / GameConstants.TOTAL_QUESTIONS;
-        }
-
-        private static (string rank, string label) CalcRank(int score)
-        {
-            if (score >= GameConstants.RANK_S) return ("S", "神");
-            if (score >= GameConstants.RANK_A) return ("A", "最高");
-            if (score >= GameConstants.RANK_B) return ("B", "いい感じ");
-            if (score >= GameConstants.RANK_C) return ("C", "まあまあ");
-            return ("D", "スベった");
+            if (!string.IsNullOrEmpty(_titleSceneName))
+                SceneManager.LoadScene(_titleSceneName);
         }
     }
 }

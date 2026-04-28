@@ -82,8 +82,18 @@ Engine is configured — next step: `/map-systems`
 | [`edm-quiz-presentation-vfx`](.claude/skills/edm-quiz-presentation-vfx/SKILL.md) | 演出ディレクター（DOTween + UniTask + ParticleSystem） |
 | [`edm-quiz-score-result`](.claude/skills/edm-quiz-score-result/SKILL.md) | スコア計算 + 結果画面 |
 
+### CRI ADX 公式マニュアル準拠（5 個）
+| Skill | 内容 |
+|-------|------|
+| [`cri-adx-overview`](.claude/skills/cri-adx-overview/SKILL.md) | CRI ADX 全体像・主要 API・選択肢 |
+| [`cri-adx-asset-support`](.claude/skills/cri-adx-asset-support/SKILL.md) | Asset Support Addon・CriAtomCueReference・OnMemory |
+| [`cri-adx-playback`](.claude/skills/cri-adx-playback/SKILL.md) | CriAtomExPlayer 再生制御・Dispose |
+| [`cri-adx-bpm-sync`](.claude/skills/cri-adx-bpm-sync/SKILL.md) | `GetTimeSyncedWithAudio()` でリズム同期 |
+| [`cri-adx-webgl`](.claude/skills/cri-adx-webgl/SKILL.md) | WebGL/unityroom 固有の制約・ビルド設定 |
+
 ### 関連
 - ゲーム企画書: [`design/gdd/game-concept.md`](design/gdd/game-concept.md)
 - システム索引: [`design/gdd/systems-index.md`](design/gdd/systems-index.md)
 - ADRs: [`docs/adr/`](docs/adr/)
 - Unity Editor 操作: `uloop-*` skills
+- CRI ADX 公式マニュアル: https://game.criware.jp/manual/unity_plugin/latest/contents/index.html
