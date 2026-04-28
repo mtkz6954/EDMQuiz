@@ -43,18 +43,10 @@ namespace EDMQuiz
 
         private void LoadQuestion(int index)
         {
+            // バッファと表示をリセット。ボタン生成は QuestionDisplay が BuildButtons() 経由で行う
             _inputBuffer.Clear();
             UpdateAnswerDisplay();
             UpdateConfirmButton();
-
-            // ボタンを動的生成
-            foreach (Transform child in _buttonContainer) Destroy(child.gameObject);
-            _hiraganaButtons.Clear();
-
-            var question = GameFlowManager.Instance != null
-                ? FindFirstObjectByType<GameFlowManager>()
-                : null;
-            // TODO: QuizDatabase への参照を GameFlowManager 経由で受け取る
         }
 
         public void BuildButtons(string[] options)

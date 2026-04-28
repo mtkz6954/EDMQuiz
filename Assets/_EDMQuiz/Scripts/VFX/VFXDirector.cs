@@ -30,7 +30,8 @@ namespace EDMQuiz
 
         void OnDisable()
         {
-            BpmClock.OnBeat -= HandleBeat;
+            AnswerJudgment.OnJudged -= HandleJudgment;
+            BpmClock.OnBeat        -= HandleBeat;
         }
 
         void Start()
