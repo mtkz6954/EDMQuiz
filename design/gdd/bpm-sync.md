@@ -40,17 +40,31 @@ currentBeat   = (int)elapsedBeats % BEATS_PER_BAR  // 小節内ビート番号 (
 currentBar    = (int)elapsedBeats / BEATS_PER_BAR  // 経過小節数
 ```
 
-### BpmClock の公開 API
+### BpmClock の公開 API（R3 化）
 
 ```csharp
-float ElapsedSeconds    { get; }   // 経過秒
-float ElapsedBeats      { get; }   // 経過ビート数
-int   CurrentBeat       { get; }   // 小節内ビート (0〜BEATS_PER_BAR-1)
-int   CurrentBar        { get; }   // 経過小節数
+public class BpmClock : MonoBehaviour
+{
+    public float ElapsedSeconds { get; private set; }
+    public float ElapsedBeats   { get; private set; }
+    public int   CurrentBeat    { get; private set; }
+    public int   CurrentBar     { get; private set; }
 
-// ビート境界を購読するイベント
-public static event Action OnBeat;  // 毎ビート発火
-public static event Action OnBar;   // 毎小節の頭で発火
+    // R3 ストリームとして公開
+    private static readonly Subject<Unit> _onBeatSubject = new();
+    private static readonly Subject<Unit> _onBarSubject  = new();
+    public static Observable<Unit> OnBeat => _onBeatSubject;
+    public static Observable<Unit> OnBar  => _onBarSubject;
+}
+```
+
+購読側は `.AddTo(this)` で破棄を自動管理:
+
+```csharp
+BpmClock.OnBeat
+    .Where(_ => phase == GamePhase.BuildUp)
+    .Subscribe(_ => Pulse())
+    .AddTo(this);
 ```
 
 ### 更新頻度
@@ -115,9 +129,24 @@ isBeatCrossed  = currBeatInt > prevBeatInt
 |--------|------------|------|
 | `BPM` | 128 | BGMのテンポ。BGM差し替え時に合わせて変更 |
 | `BEATS_PER_BAR` | 4 | 拍子（4/4拍子固定） |
-| `BUILDUP_BARS` | 8 | ビルドアップの小節数（`BUILDUP_PHASE_SEC` と整合させる） |
+| `BUILDUP_BARS` | 16 | ビルドアップの小節数（`BUILDUP_PHASE_SEC` を逆算で決定） |
 
-`BUILDUP_PHASE_SEC`（24秒）= `BUILDUP_BARS`（8小節） × `beatDuration × 4`（BPM=128 で 1小節=1.875秒 × 8 ≒ 15秒）——**BPM と秒数の整合は BGM 確定後に要調整**。
+### BPM と秒数の整合
+
+`BUILDUP_PHASE_SEC` は **BPM と BUILDUP_BARS から逆算で決定**する（手動定数で持たない）:
+
+```
+beatDuration       = 60 / BPM                                // 0.46875s @ BPM=128
+buildUpDuration    = BUILDUP_BARS × BEATS_PER_BAR × beatDuration  // 30s @ 16bars/4beats/128bpm
+```
+
+| BPM | BUILDUP_BARS | BUILDUP_PHASE_SEC（実値） |
+|-----|--------------|---------------------------|
+| 128 | 8            | 15.0s                     |
+| 128 | 16           | 30.0s                     |
+| 140 | 16           | 27.4s                     |
+
+`GameConstants.BUILDUP_PHASE_SEC` は固定値ではなく `GameConstants.GetBuildUpDurationSec()` のような関数として実装し、BPM 変更時に自動追随させる。BGM 確定後に小節数（`BUILDUP_BARS`）を最終調整する。
 
 ---
 
