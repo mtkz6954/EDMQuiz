@@ -44,3 +44,6 @@ ehthumbs.db
 
 # CRI ADX (generated files — keep ACB/AWB in Assets/SoundData/)
 *.acf
+
+# NuGetForUnity
+/Packages/nuget-packages/InstalledPackages*
