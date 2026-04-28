@@ -2,6 +2,140 @@
    game-panel.uss  —  ゲーム画面固有スタイル
 ====================================================== */
 
+/* ─── BUILD UP / DROP!! バー行 ─── */
+.buildup-row {
+    flex-direction: row;
+    align-items: center;
+    width: 96%;
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+.buildup-label {
+    font-size: 14px;
+    color: rgb(0, 240, 255);
+    -unity-font-style: bold;
+    min-width: 96px;
+    -unity-text-align: middle-left;
+    text-shadow: 0 0 6px rgb(0, 240, 255);
+}
+
+.drop-label {
+    font-size: 14px;
+    color: rgb(255, 60, 142);
+    -unity-font-style: bold;
+    min-width: 70px;
+    -unity-text-align: middle-right;
+    text-shadow: 0 0 6px rgb(255, 60, 142);
+}
+
+.buildup-bar-container {
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0 10px;
+}
+
+/* 音符はバーの上に浮かせる */
+.music-notes-label {
+    font-size: 14px;
+    color: rgb(0, 240, 255);
+    -unity-text-align: middle-center;
+    margin-bottom: 2px;
+    opacity: 0.85;
+}
+
+/* レインボーグラデを 6 セグメントで近似 */
+.buildup-bar-track {
+    height: 18px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 9px;
+    border-width: 0;
+    overflow: hidden;
+    flex-direction: row;
+}
+
+.buildup-rainbow {
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.buildup-rainbow > VisualElement {
+    height: 100%;
+    flex-grow: 1;
+}
+
+.rainbow-c1 { background-color: rgb(0, 220, 255); }
+.rainbow-c2 { background-color: rgb(120, 220, 100); }
+.rainbow-c3 { background-color: rgb(255, 230, 0); }
+.rainbow-c4 { background-color: rgb(255, 140, 32); }
+.rainbow-c5 { background-color: rgb(255, 60, 180); }
+.rainbow-c6 { background-color: rgb(255, 255, 255); }
+
+/* 進捗フィルは透明（旧仕様の参照を残しつつ無効化） */
+.buildup-bar-fill {
+    height: 100%;
+    width: 0%;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* ビートドット行（バーの下） */
+.buildup-dots {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 14px;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.beat-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.beat-dot--filled {
+    background-color: rgb(255, 230, 0);
+    border-color: rgb(255, 230, 0);
+}
+
+/* ─── キャラクターストリップ ─── */
+.characters-strip {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-around;
+    width: 100%;
+    flex-grow: 1;
+    min-height: 110px;
+    max-height: 160px;
+    padding: 0 4px;
+    margin-top: 6px;
+}
+
+.character-slot {
+    flex-grow: 1;
+    height: 100%;
+    max-width: 150px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    -unity-background-scale-mode: scale-to-fit;
+    margin: 0 4px;
+}
+
+/* キャラに少しだけサイズ・傾き差を入れて手描き感を出す */
+.character-slot--v0 { rotate: -4deg; max-width: 170px; }
+.character-slot--v1 { rotate: 3deg;  max-width: 130px; }
+.character-slot--v2 { rotate: -2deg; max-width: 160px; }
+.character-slot--v3 { rotate: 4deg;  max-width: 150px; }
+.character-slot--v4 { rotate: -3deg; max-width: 140px; }
+
 /* ─── 結果画面 ─── */
 .result-root {
     position: absolute;

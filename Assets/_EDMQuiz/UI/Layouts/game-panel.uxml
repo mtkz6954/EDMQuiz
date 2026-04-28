@@ -5,30 +5,94 @@
     <!-- ベース: フルスクリーン背景 (BPM パルス対象) -->
     <ui:VisualElement name="background-panel" class="background-panel">
 
+        <!-- 背景演出（最下層） -->
+        <ui:VisualElement name="bg-spotlight" class="bg-spotlight" picking-mode="Ignore" />
+        <ui:VisualElement name="bg-floor" class="bg-floor" picking-mode="Ignore" />
+        <ui:VisualElement name="bg-lasers" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+            <ui:VisualElement class="laser-line laser-line--l1" />
+            <ui:VisualElement class="laser-line laser-line--l2" />
+            <ui:VisualElement class="laser-line laser-line--l3" />
+            <ui:VisualElement class="laser-line laser-line--l4" />
+            <ui:VisualElement class="laser-line laser-line--l5" />
+            <ui:VisualElement class="laser-line laser-line--l6" />
+            <ui:VisualElement class="laser-line laser-line--l7" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bg-stars" picking-mode="Ignore" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;">
+            <ui:VisualElement class="bg-star bg-star--s1" />
+            <ui:VisualElement class="bg-star bg-star--s2" />
+            <ui:VisualElement class="bg-star bg-star--s3" />
+            <ui:VisualElement class="bg-star bg-star--s4" />
+            <ui:VisualElement class="bg-star bg-star--s5" />
+            <ui:VisualElement class="bg-star bg-star--s6" />
+            <ui:VisualElement class="bg-star bg-star--s7" />
+            <ui:VisualElement class="bg-star bg-star--s8" />
+            <ui:VisualElement class="bg-star bg-star--s9" />
+            <ui:VisualElement class="bg-star bg-star--s10" />
+        </ui:VisualElement>
+
         <!-- 不正解フラッシュ用オーバーレイ (透明で待機) -->
         <ui:VisualElement name="blue-overlay" class="blue-overlay" />
 
         <!-- 正解テキスト (DOScale アニメ対象、通常は scale 0) -->
         <ui:Label name="correct-label" class="correct-label" text="正解！" />
 
-        <!-- 問題文 -->
-        <ui:Label name="question-text" class="question-text" text="〇〇〇〇〇〇〇〇〇〇" />
+        <!-- 左上: 問題進捗カウンター -->
+        <ui:Label name="progress-counter" class="progress-counter" text="Q01/5" />
+
+        <!-- 問題パネル: 黄色バッジ + 問題文 -->
+        <ui:VisualElement name="question-panel" class="question-panel">
+            <ui:Label name="question-number-badge" class="question-number-badge" text="01" />
+            <ui:Label name="question-text" class="question-text" text="〇〇〇〇〇〇〇〇〇〇" enable-rich-text="true" />
+        </ui:VisualElement>
+
+        <!-- 指示ラベル -->
+        <ui:Label name="instruction-label" class="instruction-label" text="のってこたえろ！" />
 
         <!-- 回答セル (4 マス) -->
         <ui:VisualElement name="answer-cells" class="answer-cells">
-            <ui:Label class="answer-cell" text="" />
-            <ui:Label class="answer-cell" text="" />
-            <ui:Label class="answer-cell" text="" />
-            <ui:Label class="answer-cell" text="" />
+            <ui:Label class="answer-cell answer-cell--c0" text="" />
+            <ui:Label class="answer-cell answer-cell--c1" text="" />
+            <ui:Label class="answer-cell answer-cell--c2" text="" />
+            <ui:Label class="answer-cell answer-cell--c3" text="" />
         </ui:VisualElement>
 
-        <!-- ひらがなボタン (BuildHiraganaButtons() で動的生成) -->
+        <!-- ひらがなボタン (BuildHiraganaButtons() で動的生成・色クラスは C# で付与) -->
         <ui:VisualElement name="hiragana-buttons" class="hiragana-buttons" />
 
-        <!-- 操作ボタン列 -->
+        <!-- 操作ボタン列（モックアップに無いため display: none） -->
         <ui:VisualElement class="control-buttons">
-            <ui:Button name="backspace-button" class="control-button backspace-button" text="⌫ 消す" />
+            <ui:Button name="backspace-button" class="control-button backspace-button" text="← 消す" />
             <ui:Button name="confirm-button" class="control-button confirm-button" text="決定！" />
+        </ui:VisualElement>
+
+        <!-- BUILD UP / DROP!! プログレスバー行 -->
+        <ui:VisualElement name="buildup-row" class="buildup-row">
+            <ui:Label name="buildup-label" class="buildup-label" text="▶ BUILD UP" />
+            <ui:VisualElement name="buildup-bar-container" class="buildup-bar-container">
+                <ui:Label name="music-notes-label" class="music-notes-label" text="♪♪♪♪♪♪♪♪" />
+                <ui:VisualElement name="buildup-bar-track" class="buildup-bar-track">
+                    <ui:VisualElement name="buildup-rainbow" class="buildup-rainbow">
+                        <ui:VisualElement class="rainbow-c1" />
+                        <ui:VisualElement class="rainbow-c2" />
+                        <ui:VisualElement class="rainbow-c3" />
+                        <ui:VisualElement class="rainbow-c4" />
+                        <ui:VisualElement class="rainbow-c5" />
+                        <ui:VisualElement class="rainbow-c6" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="buildup-bar-fill" class="buildup-bar-fill" />
+                </ui:VisualElement>
+                <ui:VisualElement name="buildup-dots" class="buildup-dots" />
+            </ui:VisualElement>
+            <ui:Label name="drop-label" class="drop-label" text="DROP!!" />
+        </ui:VisualElement>
+
+        <!-- キャラクターストリップ (funnymon 5体) -->
+        <ui:VisualElement name="characters-strip" class="characters-strip">
+            <ui:VisualElement name="character-slot-0" class="character-slot character-slot--v0" />
+            <ui:VisualElement name="character-slot-1" class="character-slot character-slot--v1" />
+            <ui:VisualElement name="character-slot-2" class="character-slot character-slot--v2" />
+            <ui:VisualElement name="character-slot-3" class="character-slot character-slot--v3" />
+            <ui:VisualElement name="character-slot-4" class="character-slot character-slot--v4" />
         </ui:VisualElement>
 
         <!-- 結果画面 (GameEnd フェーズで表示、それまで非表示) -->

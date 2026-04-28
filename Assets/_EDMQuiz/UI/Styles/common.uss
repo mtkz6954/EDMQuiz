@@ -1,26 +1,93 @@
 /* ======================================================
    common.uss  —  EDMQuiz 共通スタイル
-   カラーパレット: 深夜のクラブ × ネオン
+   カラーパレット: ネオン × 紫スポットライト × EDMフロア
 ====================================================== */
 
 /* ─── 変数定義 (UI Toolkit は CSS カスタムプロパティ非対応のため定数コメントで管理) ───
-   --bg-dark     : #0d0d1a
-   --neon-pink   : #ff3c8e
-   --neon-cyan   : #00f0ff
-   --neon-yellow : #ffe600
-   --text-white  : #ffffff
-   --text-dim    : #aaaacc
+   --bg-deep        : #14082c
+   --bg-mid         : #2a1252
+   --bg-purple      : #5a2090
+   --neon-pink      : #ff3c8e
+   --neon-magenta   : #ff60c0
+   --neon-cyan      : #00f0ff
+   --neon-yellow    : #ffe600
+   --neon-green     : #6ed848
+   --neon-orange    : #ff8c20
+   --neon-violet    : #a060ff
+   --text-white     : #ffffff
+   --text-dim       : #aaaacc
+   --dark-text      : #1e1e32
 ─────────────────────────────────────────────────────── */
 
-/* ─── Root ─── */
+/* ─── Root: ライブハウス風の紫グラデ + フロア ─── */
 .background-panel {
     flex-grow: 1;
-    background-color: rgb(13, 13, 26);
+    background-color: rgb(20, 8, 44);
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 24px 16px;
+    padding: 8px 16px 0px;
+    overflow: hidden;
 }
+
+/* 中央上のスポットライト光（ぼかしは無いが紫の柔らかい点光源） */
+.bg-spotlight {
+    position: absolute;
+    top: -300px;
+    left: 50%;
+    width: 900px;
+    height: 900px;
+    margin-left: -450px;
+    background-color: rgba(180, 70, 220, 0.45);
+    border-radius: 450px;
+}
+
+/* 床のグラデ（下半分を少し赤紫に） */
+.bg-floor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30%;
+    background-color: rgba(80, 20, 90, 0.35);
+}
+
+/* スポットライト光線 7本（上から放射） */
+.laser-line {
+    position: absolute;
+    top: -8%;
+    width: 6px;
+    height: 130%;
+    opacity: 0.35;
+    transform-origin: 50% 0%;
+    border-radius: 3px;
+}
+.laser-line--l1 { background-color: rgb(0, 240, 255); left: 18%;  rotate: -22deg; }
+.laser-line--l2 { background-color: rgb(110, 216, 72); left: 30%; rotate: -10deg; }
+.laser-line--l3 { background-color: rgb(255, 230, 0); left: 42%; rotate: -3deg; }
+.laser-line--l4 { background-color: rgb(255, 255, 255); left: 50%; rotate: 0deg; opacity: 0.18; }
+.laser-line--l5 { background-color: rgb(255, 60, 142); left: 58%; rotate: 5deg; }
+.laser-line--l6 { background-color: rgb(160, 96, 255); left: 70%; rotate: 14deg; }
+.laser-line--l7 { background-color: rgb(255, 140, 32); left: 82%; rotate: 24deg; }
+
+/* 星屑（小さな白点を散布） */
+.bg-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 2px;
+}
+.bg-star--s1 { top: 12%; left: 8%;  width: 2px; height: 2px; opacity: 0.7; }
+.bg-star--s2 { top: 18%; left: 22%; width: 4px; height: 4px; opacity: 0.9; }
+.bg-star--s3 { top: 9%;  left: 38%; width: 2px; height: 2px; opacity: 0.6; }
+.bg-star--s4 { top: 22%; left: 60%; width: 3px; height: 3px; opacity: 0.85; }
+.bg-star--s5 { top: 14%; left: 78%; width: 2px; height: 2px; opacity: 0.65; }
+.bg-star--s6 { top: 30%; left: 90%; width: 3px; height: 3px; opacity: 0.7; }
+.bg-star--s7 { top: 42%; left: 4%;  width: 2px; height: 2px; opacity: 0.5; }
+.bg-star--s8 { top: 8%;  left: 92%; width: 4px; height: 4px; opacity: 0.85; }
+.bg-star--s9 { top: 50%; left: 95%; width: 2px; height: 2px; opacity: 0.45; }
+.bg-star--s10{ top: 35%; left: 50%; width: 2px; height: 2px; opacity: 0.55; }
 
 /* ─── オーバーレイ ─── */
 .blue-overlay {
@@ -39,42 +106,130 @@
     right: 0;
     top: 40%;
     -unity-text-align: middle-center;
-    font-size: 72px;
+    font-size: 88px;
     color: rgb(255, 230, 0);
     -unity-font-style: bold;
+    text-shadow: 4px 4px 0 rgb(255, 60, 142);
     scale: 0 0;
 }
 
-/* ─── 問題文 ─── */
+/* ─── 進捗カウンター (左上 "Q3/5") ─── */
+.progress-counter {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    background-color: rgba(20, 8, 44, 0.92);
+    border-radius: 14px;
+    border-width: 3px;
+    border-color: rgb(255, 255, 255);
+    padding: 4px 14px;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 1px;
+}
+
+/* ─── 問題パネル ─── */
+.question-panel {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    border-radius: 22px;
+    padding: 10px 18px;
+    margin-top: 38px;
+    margin-bottom: 8px;
+    max-width: 92%;
+    min-width: 320px;
+    border-width: 3px;
+    border-color: rgb(20, 8, 44);
+}
+
+.question-number-badge {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    background-color: rgb(255, 230, 0);
+    border-radius: 10px;
+    border-width: 3px;
+    border-color: rgb(20, 8, 44);
+    font-size: 22px;
+    color: rgb(20, 8, 44);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-right: 14px;
+}
+
+/* 問題文（コミック調）。リッチテキストで強調語を <color=#ff3c8e> で囲む想定 */
 .question-text {
     font-size: 22px;
-    color: rgb(200, 200, 220);
-    -unity-text-align: middle-center;
+    color: rgb(20, 8, 44);
+    -unity-text-align: middle-left;
     white-space: normal;
-    margin-top: 16px;
-    margin-bottom: 20px;
-    max-width: 90%;
+    flex-grow: 1;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+/* ─── 指示ラベル（黄緑テープ風・斜め貼り） ─── */
+.instruction-label {
+    background-color: rgb(202, 248, 60);
+    color: rgb(20, 8, 44);
+    font-size: 18px;
+    -unity-font-style: bold;
+    border-radius: 4px;
+    padding: 4px 18px;
+    margin-top: -10px;
+    margin-bottom: 16px;
+    margin-left: 6%;
+    rotate: -6deg;
+    -unity-text-align: middle-center;
+    align-self: flex-start;
+    border-width: 2px;
+    border-color: rgb(20, 8, 44);
 }
 
 /* ─── 回答セル行 ─── */
 .answer-cells {
     flex-direction: row;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .answer-cell {
-    width: 64px;
-    height: 64px;
-    border-width: 2px;
-    border-color: rgb(0, 240, 255);
-    border-radius: 8px;
+    width: 78px;
+    height: 78px;
+    border-width: 3px;
+    border-color: rgb(20, 8, 44);
+    border-radius: 12px;
     margin: 4px;
-    font-size: 30px;
-    color: rgb(255, 255, 255);
+    font-size: 40px;
+    color: rgb(20, 8, 44);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    background-color: rgba(0, 240, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.0);
+}
+
+/* セルごとの色バリエ（埋まっていない初期状態でも配色を保つ） */
+.answer-cell--c0 { background-color: rgb(255, 230, 0); }
+.answer-cell--c1 { background-color: rgb(0, 220, 255); }
+.answer-cell--c2 { background-color: rgb(150, 230, 60); }
+.answer-cell--c3 { background-color: rgb(255, 255, 255); }
+
+/* 入力済セル: わずかな傾きで動きを出す */
+.answer-cell--filled {
+    rotate: -3deg;
+}
+.answer-cell--filled.answer-cell--c1 { rotate: 4deg; }
+.answer-cell--filled.answer-cell--c2 { rotate: -2deg; }
+.answer-cell--filled.answer-cell--c3 { rotate: 3deg; }
+
+/* カーソル位置セル: 白点線風（実線太枠で代用） */
+.answer-cell--cursor {
+    background-color: rgba(255, 255, 255, 0.0);
+    border-color: rgb(255, 255, 255);
+    border-width: 3px;
+    color: rgb(255, 255, 255);
 }
 
 /* ─── ひらがなボタン群 ─── */
@@ -82,71 +237,58 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    max-width: 340px;
-    margin-bottom: 16px;
+    max-width: 720px;
+    margin-bottom: 10px;
 }
 
 .hiragana-button {
-    width: 68px;
-    height: 68px;
+    width: 64px;
+    height: 64px;
     margin: 5px;
-    font-size: 26px;
-    color: rgb(255, 255, 255);
-    background-color: rgba(255, 60, 142, 0.25);
-    border-color: rgb(255, 60, 142);
-    border-width: 2px;
-    border-radius: 10px;
+    font-size: 28px;
+    color: rgb(20, 8, 44);
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(20, 8, 44);
+    border-width: 3px;
+    border-radius: 12px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    transition-property: background-color, scale;
-    transition-duration: 0.1s;
+    transition-property: background-color, scale, rotate;
+    transition-duration: 0.12s;
 }
 
+/* 色バリエ */
+.hiragana-button--c0 { background-color: rgb(255, 230, 0); rotate: -3deg; }
+.hiragana-button--c1 { background-color: rgb(0, 220, 255); rotate: 2deg; }
+.hiragana-button--c2 { background-color: rgb(150, 230, 60); rotate: -2deg; }
+.hiragana-button--c3 { background-color: rgb(255, 255, 255); rotate: 3deg; }
+.hiragana-button--c4 { background-color: rgb(255, 140, 32); color: rgb(255, 255, 255); rotate: -4deg; }
+.hiragana-button--c5 { background-color: rgb(255, 60, 180); color: rgb(255, 255, 255); rotate: 4deg; }
+.hiragana-button--c6 { background-color: rgb(160, 96, 255); color: rgb(255, 255, 255); rotate: -3deg; }
+
 .hiragana-button:hover {
-    background-color: rgba(255, 60, 142, 0.5);
+    scale: 1.06 1.06;
 }
 
 .hiragana-button:active {
-    background-color: rgb(255, 60, 142);
-    scale: 0.92 0.92;
+    scale: 0.94 0.94;
 }
 
-.hiragana-button:disabled {
-    opacity: 0.3;
+/* 使用済（disabled / .is-used）は色を保持しつつ暗く落とす */
+.hiragana-button:disabled,
+.hiragana-button.is-used {
+    opacity: 0.45;
 }
 
-/* ─── コントロールボタン行 ─── */
+/* 使用済を更にグレーアウト（モックアップの暗灰色と一致） */
+.hiragana-button.is-used {
+    background-color: rgb(70, 70, 90);
+    color: rgba(255, 255, 255, 0.35);
+    border-color: rgb(40, 40, 60);
+    opacity: 0.7;
+}
+
+/* ─── コントロールボタン行（モックアップに無いので非表示） ─── */
 .control-buttons {
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 4px;
-}
-
-.control-button {
-    height: 52px;
-    margin: 6px;
-    border-radius: 12px;
-    font-size: 20px;
-    -unity-font-style: bold;
-    border-width: 2px;
-}
-
-.backspace-button {
-    min-width: 120px;
-    color: rgb(200, 200, 220);
-    background-color: rgba(100, 100, 140, 0.3);
-    border-color: rgb(100, 100, 140);
-}
-
-.confirm-button {
-    min-width: 140px;
-    color: rgb(13, 13, 26);
-    background-color: rgb(255, 230, 0);
-    border-color: rgb(255, 230, 0);
-}
-
-.confirm-button:disabled {
-    background-color: rgba(255, 230, 0, 0.2);
-    color: rgba(255, 230, 0, 0.4);
-    border-color: rgba(255, 230, 0, 0.3);
+    display: none;
 }

@@ -1,0 +1,108 @@
+{
+  "ExportTimestamp": "2026-04-28 16:27:39",
+  "Context": {
+    "sceneType": "editor",
+    "sceneName": "GameScene",
+    "nodeCount": 7,
+    "maxDepth": 1
+  },
+  "Hierarchy": [
+    {
+      "sceneName": "GameScene",
+      "stats": {
+        "rootCount": 3,
+        "nodeCount": 7,
+        "maxDepth": 1
+      },
+      "roots": [
+        {
+          "name": "Main Camera",
+          "isActive": true,
+          "components": [
+            "Transform",
+            "Camera"
+          ],
+          "siblingIndex": 0,
+          "tag": "MainCamera",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "Managers",
+          "isActive": true,
+          "components": [
+            "Transform"
+          ],
+          "siblingIndex": 1,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "GameFlowManager",
+              "isActive": true,
+              "components": [
+                "Transform",
+                "GameFlowManager"
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "ScoreManager",
+              "isActive": true,
+              "components": [
+                "Transform",
+                "ScoreManager"
+              ],
+              "siblingIndex": 1,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "BpmClock",
+              "isActive": true,
+              "components": [
+                "Transform",
+                "BpmClock"
+              ],
+              "siblingIndex": 2,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "UI",
+          "isActive": true,
+          "components": [
+            "Transform"
+          ],
+          "siblingIndex": 2,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "GameUI",
+              "isActive": true,
+              "components": [
+                "Transform",
+                "UIDocument",
+                "HiraganaInputUI",
+                "ResultScreen",
+                "VFXDirector"
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
