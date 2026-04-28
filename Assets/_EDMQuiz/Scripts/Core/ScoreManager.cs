@@ -30,10 +30,11 @@ namespace EDMQuiz
                 .Subscribe(_ => _correctCount.Value++)
                 .AddTo(this);
 
-            // 1問目の Question フェーズで集計をリセット
+            // 1問目（QuestionIndex==0）に入るたびにリセット（リスタート時も対応）
             GameFlowManager.OnPhaseChanged
-                .Where(p => p == GamePhase.Question)
-                .Take(1)
+                .Where(p => p == GamePhase.Question
+                         && GameFlowManager.Instance != null
+                         && GameFlowManager.Instance.QuestionIndex == 0)
                 .Subscribe(_ => _correctCount.Value = 0)
                 .AddTo(this);
         }

@@ -29,6 +29,10 @@ namespace EDMQuiz
         public const float BEAT_PULSE_SCALE             = 1.03f;
         public const float BEAT_PULSE_DURATION_RATIO    = 0.2f;
         public const float BLUE_OVERLAY_ALPHA           = 0.6f;
+        public const float INCORRECT_FREEZE_SEC          = 0.1f;
+        public const float INCORRECT_OVERLAY_DELAY_SEC  = 0.5f;
+        public const float INCORRECT_OVERLAY_FADE_SEC   = 0.2f;
+        public const float INCORRECT_OVERLAY_TOTAL_SEC  = INCORRECT_OVERLAY_DELAY_SEC + INCORRECT_OVERLAY_FADE_SEC;
 
         // ── 入力 UI ────────────────────────────────
         public const float BUTTON_PULSE_SCALE           = 1.08f;

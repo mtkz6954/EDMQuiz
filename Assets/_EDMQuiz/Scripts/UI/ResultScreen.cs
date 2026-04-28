@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using R3;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace EDMQuiz
@@ -13,7 +12,6 @@ namespace EDMQuiz
     public class ResultScreen : MonoBehaviour
     {
         [SerializeField] private UIDocument _uiDocument;
-        [SerializeField] private string _titleSceneName = "TitleScene";
 
         private VisualElement _root;
         private Label _scoreLabel;
@@ -80,8 +78,9 @@ namespace EDMQuiz
 
         private void OnRetryClicked()
         {
-            if (!string.IsNullOrEmpty(_titleSceneName))
-                SceneManager.LoadScene(_titleSceneName);
+            if (_root != null) _root.style.display = DisplayStyle.None;
+            AudioManager.Instance?.PlayBGM();
+            GameFlowManager.Instance?.StartGame();
         }
     }
 }

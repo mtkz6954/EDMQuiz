@@ -83,6 +83,7 @@ namespace EDMQuiz
                 _bgmPlayback = _bgmPlayer.Start();
                 IsBgmPlaying = true;
                 _useFallback = false;
+                BpmClock.Instance?.StartClock();
             }
             catch (System.Exception e)
             {
@@ -96,6 +97,7 @@ namespace EDMQuiz
             _useFallback = true;
             _fallbackStartTime = Time.unscaledTimeAsDouble;
             IsBgmPlaying = true;
+            BpmClock.Instance?.StartClock();
         }
 
         public void StopBGM()

@@ -28,6 +28,8 @@ namespace EDMQuiz
 
         private CancellationTokenSource _vfxCts;
         private Tween _mirrorBallTween;
+        private Tween _correctLabelTween;
+        private Tween _blueOverlayTween;
 
         void OnEnable()
         {
@@ -40,6 +42,8 @@ namespace EDMQuiz
             }
 
             AnswerJudgment.OnJudged
+                .Where(_ => GameFlowManager.Instance != null
+                         && GameFlowManager.Instance.CurrentPhase == GamePhase.BuildUp)
                 .Subscribe(HandleJudged)
                 .AddTo(this);
 
@@ -87,7 +91,7 @@ namespace EDMQuiz
 
                 if (_correctLabel != null)
                 {
-                    _correctLabel
+                    _correctLabelTween = _correctLabel
                         .DOScale(GameConstants.CORRECT_SCALE_PEAK, GameConstants.CORRECT_SCALE_DURATION)
                         .SetEase(Ease.OutBack);
                     await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.CORRECT_SCALE_DURATION), cancellationToken: ct);
@@ -97,7 +101,7 @@ namespace EDMQuiz
                 if (remain > 0f)
                     await UniTask.Delay(TimeSpan.FromSeconds(remain), cancellationToken: ct);
 
-                _correctLabel?.DOScale(1f, 0.2f);
+                _correctLabelTween = _correctLabel?.DOScale(1f, 0.2f);
                 StopMirrorBall();
             }
             catch (OperationCanceledException) { }
@@ -110,6 +114,12 @@ namespace EDMQuiz
                 _funnymonAnimator?.SetTrigger("FailDance");
                 AudioManager.Instance?.PlayIncorrectSE();
 
+                // 一瞬静止（スベり感演出）— ignoreTimeScale: true で UniTask はスケール外待機
+                Time.timeScale = 0f;
+                await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.INCORRECT_FREEZE_SEC),
+                    ignoreTimeScale: true, cancellationToken: ct);
+                Time.timeScale = 1f;
+
                 if (Camera.main != null)
                 {
                     Camera.main.transform.DOShakePosition(
@@ -118,16 +128,20 @@ namespace EDMQuiz
                         GameConstants.SHAKE_VIBRATO);
                 }
 
-                _blueOverlay?.DOFade(GameConstants.BLUE_OVERLAY_ALPHA, 0.2f);
+                _blueOverlayTween = _blueOverlay?.DOFade(GameConstants.BLUE_OVERLAY_ALPHA, GameConstants.INCORRECT_OVERLAY_FADE_SEC);
 
-                await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: ct);
-                _blueOverlay?.DOFade(0f, 0.5f);
+                await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.INCORRECT_OVERLAY_DELAY_SEC), cancellationToken: ct);
+                _blueOverlayTween = _blueOverlay?.DOFade(0f, GameConstants.INCORRECT_OVERLAY_FADE_SEC);
 
-                float remain = GameConstants.DROP_REVEAL_SEC - 0.7f;
+                float remain = GameConstants.DROP_REVEAL_SEC - GameConstants.INCORRECT_FREEZE_SEC
+                             - GameConstants.INCORRECT_OVERLAY_TOTAL_SEC;
                 if (remain > 0f)
                     await UniTask.Delay(TimeSpan.FromSeconds(remain), cancellationToken: ct);
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                Time.timeScale = 1f; // キャンセル時も必ず復元
+            }
         }
 
         private void PulseBackground()
@@ -160,8 +174,8 @@ namespace EDMQuiz
             _vfxCts?.Cancel();
             _vfxCts?.Dispose();
             _vfxCts = null;
-            if (_correctLabel != null) DOTween.Kill(_correctLabel);
-            if (_blueOverlay != null)  DOTween.Kill(_blueOverlay);
+            _correctLabelTween?.Kill(); _correctLabelTween = null;
+            _blueOverlayTween?.Kill();  _blueOverlayTween  = null;
             StopMirrorBall();
         }
     }

@@ -33,6 +33,7 @@ namespace EDMQuiz
 
         void Start()
         {
+            AudioManager.Instance?.PlayBGM();
             StartGame();
         }
 
@@ -82,7 +83,11 @@ namespace EDMQuiz
                     cancellationToken: _buildUpCts.Token);
 
                 // タイムアウトで未確定なら不正解判定
-                if (!_isJudged) AnswerJudgment.Judge("", CurrentQuestion);
+                if (!_isJudged)
+                {
+                    _isJudged = true;
+                    AnswerJudgment.Judge("", CurrentQuestion);
+                }
             }
             catch (OperationCanceledException)
             {
