@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,12 +14,13 @@ namespace EDMQuiz
         /// <summary>下部キャラクターストリップに表示する Sprite (5体分を Inspector で割り当て)</summary>
         [SerializeField] private Sprite[] _characterSprites = new Sprite[5];
 
-        // ひらがなボタン用のカラーバリエ（USS の .hiragana-button--c0〜c6 に対応）
-        private const int HIRAGANA_COLOR_VARIANTS = 7;
+        // ひらがなボタン用のカラーバリエ（USS の .hiragana-button--c0〜c9 に対応）
+        private const int HIRAGANA_COLOR_VARIANTS = 10;
         // 回答セル用のカラーバリエ（USS の .answer-cell--c0〜c3 に対応）
         private const int ANSWER_CELL_COLOR_VARIANTS = 4;
 
         private VisualElement _root;
+        private VisualElement _questionPanel;
         private Label _questionText;
         private Label[] _answerCells;
         private VisualElement _buttonContainer;
@@ -28,8 +30,12 @@ namespace EDMQuiz
         // HUD 要素
         private Label _progressCounter;
         private Label _questionNumberBadge;
+        private VisualElement _countdownWidget;
+        private VisualElement _answerNowCallout;
         private VisualElement _buildupBarFill;
+        private Label _buildupCountdown;
         private VisualElement[] _characterSlots;
+        private VisualElement[] _cameoSlots;
 
         // ビート表示用ドット行
         private VisualElement _buildupDotsContainer;
@@ -37,6 +43,19 @@ namespace EDMQuiz
 
         private readonly List<string> _inputBuffer = new();
         private readonly List<Button> _hiraganaButtons = new();
+        // ボタンに対応するひらがな（キーボードショートカット呼び出し時に参照）
+        private readonly List<string> _hiraganaKanas = new();
+
+        private static readonly int[] KeypadNumbersByOptionIndex =
+        {
+            7, 8, 9,
+            4, 5, 6,
+            1, 2, 3,
+            0,
+        };
+
+        private Tween _questionFadeTween;
+        private Tween _questionSlideTween;
 
         private int _buildupBeatCount;
         private static readonly int TotalBuildupBeats =
@@ -50,6 +69,7 @@ namespace EDMQuiz
                 return;
             }
             _root = _uiDocument.rootVisualElement;
+            _questionPanel   = _root.Q<VisualElement>("question-panel");
             _questionText    = _root.Q<Label>("question-text");
             _buttonContainer = _root.Q<VisualElement>("hiragana-buttons");
             _backspaceButton = _root.Q<Button>("backspace-button");
@@ -61,15 +81,27 @@ namespace EDMQuiz
             // HUD 要素を取得
             _progressCounter      = _root.Q<Label>("progress-counter");
             _questionNumberBadge  = _root.Q<Label>("question-number-badge");
+            _countdownWidget      = _root.Q<VisualElement>("countdown-widget");
+            _answerNowCallout     = _root.Q<VisualElement>("answer-now-callout");
             _buildupBarFill       = _root.Q<VisualElement>("buildup-bar-fill");
+            _buildupCountdown     = _root.Q<Label>("buildup-countdown");
             _buildupDotsContainer = _root.Q<VisualElement>("buildup-dots");
 
             _characterSlots = new VisualElement[5];
             for (int i = 0; i < 5; i++)
                 _characterSlots[i] = _root.Q<VisualElement>($"character-slot-{i}");
 
+            _cameoSlots = new VisualElement[5];
+            for (int i = 0; i < 5; i++)
+                _cameoSlots[i] = _root.Q<VisualElement>($"cameo-slot-{i}");
+
             if (_backspaceButton != null) _backspaceButton.clicked += OnBackspacePressed;
             if (_confirmButton   != null) _confirmButton.clicked   += OnConfirmPressed;
+
+            // ルートにキーボードイベントを登録（数字 1-8 でひらがなボタンを押す）
+            _root.focusable = true;
+            _root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+            _root.Focus();
 
             InitCharacterStrip();
             BuildBeatDots();
@@ -78,18 +110,40 @@ namespace EDMQuiz
                 .Subscribe(HandlePhaseChanged)
                 .AddTo(this);
 
+            GameFlowManager.OnQuestionReveal
+                .Where(_ => GameFlowManager.Instance != null
+                         && GameFlowManager.Instance.CurrentPhase == GamePhase.Question)
+                .Subscribe(_ => PlayQuestionFadeIn())
+                .AddTo(this);
+
+            // BuildUp 中: ビート進捗で背景ドットを埋める
             BpmClock.OnBeat
                 .Where(_ => GameFlowManager.Instance != null
                          && GameFlowManager.Instance.CurrentPhase == GamePhase.BuildUp)
                 .Subscribe(_ =>
                 {
-                    PulseAllButtons();
                     _buildupBeatCount++;
                     UpdateBuildupBar();
                 })
                 .AddTo(this);
 
+            // BuildUp / AnswerWindow 中: UI をビート同期でパルス
+            BpmClock.OnBeat
+                .Where(_ => GameFlowManager.Instance != null
+                         && (GameFlowManager.Instance.CurrentPhase == GamePhase.BuildUp
+                          || GameFlowManager.Instance.CurrentPhase == GamePhase.AnswerWindow))
+                .Subscribe(_ => PulseInputArea())
+                .AddTo(this);
+
+            // BGM 経過秒に基づくカウントダウン表示
+            GameFlowManager.BuildUpRemainingSec
+                .Subscribe(UpdateBuildupCountdown)
+                .AddTo(this);
+
             SetInputEnabled(false);
+            SetCountdownVisible(false);
+            SetAnswerNowVisible(false);
+            ResetQuestionPanelToHidden();
             UpdateAnswerDisplay();
             UpdateConfirmButton();
         }
@@ -98,6 +152,12 @@ namespace EDMQuiz
         {
             if (_backspaceButton != null) _backspaceButton.clicked -= OnBackspacePressed;
             if (_confirmButton   != null) _confirmButton.clicked   -= OnConfirmPressed;
+            _root?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+
+            _questionFadeTween?.Kill();
+            _questionSlideTween?.Kill();
+            _questionFadeTween  = null;
+            _questionSlideTween = null;
         }
 
         private void HandlePhaseChanged(GamePhase phase)
@@ -108,13 +168,35 @@ namespace EDMQuiz
                     _buildupBeatCount = 0;
                     ResetBuildupBar();
                     LoadQuestion();
+                    ResetQuestionPanelToHidden();
                     SetInputEnabled(false);
+                    SetCountdownVisible(false);
+                    SetAnswerNowVisible(false);
                     break;
                 case GamePhase.BuildUp:
-                    SetInputEnabled(true);
+                    CompleteQuestionReveal();
+                    SetInputEnabled(false);     // 入力ロック
+                    SetCountdownVisible(true);  // 残り秒数を表示
+                    SetAnswerNowVisible(false);
+                    break;
+                case GamePhase.AnswerWindow:
+                    SetQuestionVisible(true);
+                    SetInputEnabled(true);      // 4 拍だけ入力 ON
+                    SetCountdownVisible(false);
+                    SetAnswerNowVisible(true);
+                    break;
+                case GamePhase.Drop:
+                case GamePhase.FadeOut:
+                    SetQuestionVisible(true);
+                    SetInputEnabled(false);
+                    SetCountdownVisible(false);
+                    SetAnswerNowVisible(false);
                     break;
                 default:
+                    ResetQuestionPanelToHidden();
                     SetInputEnabled(false);
+                    SetCountdownVisible(false);
+                    SetAnswerNowVisible(false);
                     break;
             }
         }
@@ -131,29 +213,122 @@ namespace EDMQuiz
             _questionText.text = q.questionText;
             BuildHiraganaButtons(q.hiraganaOptions);
 
-            // 進捗カウンターと問題番号バッジを更新（モックアップ "Q03/5" / "Q03"）
+            // 進捗カウンターと問題番号バッジを更新（モックアップ "03/5" / "03"）
             int displayNum = (GameFlowManager.Instance?.QuestionIndex ?? 0) + 1;
             if (_progressCounter != null)
-                _progressCounter.text = $"Q{displayNum:D2}/{GameConstants.TOTAL_QUESTIONS}";
+                _progressCounter.text = $"{displayNum:D2}/{GameConstants.TOTAL_QUESTIONS}";
             if (_questionNumberBadge != null)
-                _questionNumberBadge.text = $"Q{displayNum:D2}";
+                _questionNumberBadge.text = $"{displayNum:D2}";
         }
 
         private void BuildHiraganaButtons(string[] options)
         {
             _buttonContainer.Clear();
             _hiraganaButtons.Clear();
+            _hiraganaKanas.Clear();
             if (options == null) return;
 
-            for (int i = 0; i < options.Length; i++)
+            var rowTop = CreateKeypadRow("hiragana-key-row--top");
+            var rowMiddle = CreateKeypadRow("hiragana-key-row--middle");
+            var rowBottom = CreateKeypadRow("hiragana-key-row--bottom");
+            var rowWide = CreateKeypadRow("hiragana-key-row--wide");
+
+            _buttonContainer.Add(rowTop);
+            _buttonContainer.Add(rowMiddle);
+            _buttonContainer.Add(rowBottom);
+            _buttonContainer.Add(rowWide);
+
+            for (int i = 0; i < options.Length && i < KeypadNumbersByOptionIndex.Length; i++)
             {
                 string captured = options[i];
                 var btn = new Button(() => OnHiraganaPressed(captured)) { text = captured };
                 btn.AddToClassList("hiragana-button");
                 btn.AddToClassList($"hiragana-button--c{i % HIRAGANA_COLOR_VARIANTS}");
-                _buttonContainer.Add(btn);
+
+                int keypadNumber = GetKeypadNumberForOptionIndex(i);
+                if (keypadNumber == 0)
+                    btn.AddToClassList("hiragana-button--wide");
+
+                // キーボード対応の番号バッジ (テンキー配置)
+                var numberBadge = new Label(keypadNumber.ToString());
+                numberBadge.AddToClassList("hiragana-number-badge");
+                numberBadge.pickingMode = PickingMode.Ignore;
+                btn.Add(numberBadge);
+
+                GetKeypadRowForOptionIndex(i, rowTop, rowMiddle, rowBottom, rowWide).Add(btn);
                 _hiraganaButtons.Add(btn);
+                _hiraganaKanas.Add(captured);
             }
+        }
+
+        private static VisualElement CreateKeypadRow(string className)
+        {
+            var row = new VisualElement();
+            row.AddToClassList("hiragana-key-row");
+            row.AddToClassList(className);
+            return row;
+        }
+
+        private static VisualElement GetKeypadRowForOptionIndex(
+            int optionIndex,
+            VisualElement rowTop,
+            VisualElement rowMiddle,
+            VisualElement rowBottom,
+            VisualElement rowWide)
+        {
+            if (optionIndex <= 2) return rowTop;
+            if (optionIndex <= 5) return rowMiddle;
+            if (optionIndex <= 8) return rowBottom;
+            return rowWide;
+        }
+
+        /// <summary>キーボード 1-8（メイン段／テンキー）で対応するひらがなボタンを押下扱いにする。</summary>
+        private void OnKeyDown(KeyDownEvent evt)
+        {
+            if (GameFlowManager.Instance?.CurrentPhase != GamePhase.AnswerWindow) return;
+
+            int idx = ResolveHiraganaIndex(evt.keyCode);
+            if (idx < 0 || idx >= _hiraganaButtons.Count) return;
+
+            var btn = _hiraganaButtons[idx];
+            if (btn == null || !btn.enabledInHierarchy) return;
+
+            OnHiraganaPressed(_hiraganaKanas[idx]);
+            evt.StopPropagation();
+        }
+
+        private static int ResolveHiraganaIndex(KeyCode keyCode)
+        {
+            for (int i = 0; i < KeypadNumbersByOptionIndex.Length; i++)
+            {
+                if (MatchesNumberKey(keyCode, KeypadNumbersByOptionIndex[i]))
+                    return i;
+            }
+            return -1;
+        }
+
+        private static int GetKeypadNumberForOptionIndex(int optionIndex)
+        {
+            if (optionIndex < 0 || optionIndex >= KeypadNumbersByOptionIndex.Length) return -1;
+            return KeypadNumbersByOptionIndex[optionIndex];
+        }
+
+        private static bool MatchesNumberKey(KeyCode keyCode, int number)
+        {
+            return number switch
+            {
+                0 => keyCode == KeyCode.Alpha0 || keyCode == KeyCode.Keypad0,
+                1 => keyCode == KeyCode.Alpha1 || keyCode == KeyCode.Keypad1,
+                2 => keyCode == KeyCode.Alpha2 || keyCode == KeyCode.Keypad2,
+                3 => keyCode == KeyCode.Alpha3 || keyCode == KeyCode.Keypad3,
+                4 => keyCode == KeyCode.Alpha4 || keyCode == KeyCode.Keypad4,
+                5 => keyCode == KeyCode.Alpha5 || keyCode == KeyCode.Keypad5,
+                6 => keyCode == KeyCode.Alpha6 || keyCode == KeyCode.Keypad6,
+                7 => keyCode == KeyCode.Alpha7 || keyCode == KeyCode.Keypad7,
+                8 => keyCode == KeyCode.Alpha8 || keyCode == KeyCode.Keypad8,
+                9 => keyCode == KeyCode.Alpha9 || keyCode == KeyCode.Keypad9,
+                _ => false,
+            };
         }
 
         private void OnHiraganaPressed(string kana)
@@ -175,7 +350,7 @@ namespace EDMQuiz
 
             // 4文字目で自動確定（モックアップ仕様: ドロップ手前の4拍に回答）
             if (_inputBuffer.Count == GameConstants.ANSWER_LENGTH
-                && GameFlowManager.Instance?.CurrentPhase == GamePhase.BuildUp)
+                && GameFlowManager.Instance?.CurrentPhase == GamePhase.AnswerWindow)
             {
                 AutoConfirm();
             }
@@ -219,7 +394,7 @@ namespace EDMQuiz
         {
             if (_confirmButton == null) return;
             bool ready = _inputBuffer.Count == GameConstants.ANSWER_LENGTH
-                      && GameFlowManager.Instance?.CurrentPhase == GamePhase.BuildUp;
+                      && GameFlowManager.Instance?.CurrentPhase == GamePhase.AnswerWindow;
             _confirmButton.SetEnabled(ready);
         }
 
@@ -230,6 +405,62 @@ namespace EDMQuiz
             UpdateConfirmButton();
         }
 
+        private void SetQuestionVisible(bool visible)
+        {
+            if (_questionPanel == null) return;
+            _questionPanel.style.visibility = visible
+                ? Visibility.Visible
+                : Visibility.Hidden;
+        }
+
+        /// <summary>問題パネルを上方オフセット位置 + 不透明度0 + Hidden で初期化する。</summary>
+        private void ResetQuestionPanelToHidden()
+        {
+            if (_questionPanel == null) return;
+            _questionFadeTween?.Kill();
+            _questionSlideTween?.Kill();
+            _questionFadeTween  = null;
+            _questionSlideTween = null;
+
+            _questionPanel.style.opacity    = 0f;
+            _questionPanel.style.translate  = new StyleTranslate(
+                new Translate(0f, GameConstants.QUESTION_FADE_IN_OFFSET_PX, 0f));
+            _questionPanel.style.visibility = Visibility.Hidden;
+        }
+
+        /// <summary>問題パネルを上方オフセットから所定位置へスライド + フェードインで表示する。</summary>
+        private void PlayQuestionFadeIn()
+        {
+            if (_questionPanel == null) return;
+            _questionFadeTween?.Kill();
+            _questionSlideTween?.Kill();
+
+            _questionPanel.style.opacity    = 0f;
+            _questionPanel.style.translate  = new StyleTranslate(
+                new Translate(0f, GameConstants.QUESTION_FADE_IN_OFFSET_PX, 0f));
+            _questionPanel.style.visibility = Visibility.Visible;
+
+            _questionFadeTween = _questionPanel
+                .DOFade(1f, GameConstants.QUESTION_FADE_IN_DURATION)
+                .SetEase(Ease.OutCubic);
+            _questionSlideTween = _questionPanel
+                .DOTranslateYTo(0f, GameConstants.QUESTION_FADE_IN_DURATION)
+                .SetEase(Ease.OutCubic);
+        }
+
+        private void CompleteQuestionReveal()
+        {
+            if (_questionPanel == null) return;
+            _questionFadeTween?.Kill();
+            _questionSlideTween?.Kill();
+            _questionFadeTween  = null;
+            _questionSlideTween = null;
+
+            _questionPanel.style.visibility = Visibility.Visible;
+            _questionPanel.style.opacity    = 1f;
+            _questionPanel.style.translate  = new StyleTranslate(new Translate(0f, 0f, 0f));
+        }
+
         private void PulseAllButtons()
         {
             float duration = GameConstants.GetBeatDuration() * GameConstants.BUTTON_PULSE_DURATION_RATIO;
@@ -237,15 +468,28 @@ namespace EDMQuiz
                 btn.DOPulse(GameConstants.BUTTON_PULSE_SCALE, duration);
         }
 
+        private void PulseInputArea()
+        {
+            PulseAllButtons();
+            float duration = GameConstants.GetBeatDuration() * GameConstants.BUTTON_PULSE_DURATION_RATIO;
+            if (_answerCells == null) return;
+            for (int i = 0; i < _answerCells.Length; i++)
+                _answerCells[i].DOPulse(GameConstants.BUTTON_PULSE_SCALE, duration);
+        }
+
         private void InitCharacterStrip()
         {
             if (_characterSlots == null) return;
             for (int i = 0; i < _characterSlots.Length; i++)
             {
-                if (_characterSlots[i] == null) continue;
                 if (i < _characterSprites.Length && _characterSprites[i] != null)
-                    _characterSlots[i].style.backgroundImage =
-                        new StyleBackground(_characterSprites[i]);
+                {
+                    var background = new StyleBackground(_characterSprites[i]);
+                    if (_characterSlots[i] != null)
+                        _characterSlots[i].style.backgroundImage = background;
+                    if (_cameoSlots != null && i < _cameoSlots.Length && _cameoSlots[i] != null)
+                        _cameoSlots[i].style.backgroundImage = background;
+                }
             }
         }
 
@@ -292,6 +536,37 @@ namespace EDMQuiz
             {
                 _buildupBarFill.style.width =
                     new StyleLength(new Length(0f, LengthUnit.Percent));
+            }
+        }
+
+        private void UpdateBuildupCountdown(float remainingSec)
+        {
+            if (_buildupCountdown == null) return;
+            string value = remainingSec < 10f
+                ? remainingSec.ToString("F1")
+                : Mathf.CeilToInt(remainingSec).ToString();
+            _buildupCountdown.text = $"回答まで\n{value}秒";
+        }
+
+        private void SetCountdownVisible(bool visible)
+        {
+            if (_countdownWidget == null) return;
+            _countdownWidget.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void SetAnswerNowVisible(bool visible)
+        {
+            if (_answerNowCallout == null) return;
+            _answerNowCallout.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _answerNowCallout.style.scale = visible
+                ? new StyleScale(new Scale(Vector3.one))
+                : new StyleScale(new Scale(Vector3.zero));
+
+            if (visible)
+            {
+                _answerNowCallout.DOPulse(
+                    GameConstants.ANSWER_NOW_PULSE_SCALE,
+                    GameConstants.GetBeatDuration() * GameConstants.ANSWER_NOW_PULSE_BEATS);
             }
         }
     }

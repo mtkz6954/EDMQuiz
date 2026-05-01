@@ -1,142 +1,370 @@
-/* ======================================================
-   game-panel.uss  —  ゲーム画面固有スタイル
-====================================================== */
+/* GameScene presentation. Text is kept in UI Toolkit so timing and localization stay editable. */
 
-/* ─── BUILD UP / DROP!! バー行 ─── */
-.buildup-row {
-    flex-direction: row;
-    align-items: center;
-    width: 96%;
-    margin-top: 6px;
-    margin-bottom: 4px;
+.stage-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../Sprites/Backgrounds/Generated/edm_stage_background.png");
+    -unity-background-scale-mode: scale-and-crop;
 }
 
-.buildup-label {
-    font-size: 14px;
-    color: rgb(0, 240, 255);
+.stage-light-wash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 2, 38, 0.12);
+}
+
+.bg-lasers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.laser-line {
+    position: absolute;
+    top: -16%;
+    width: 9px;
+    height: 150%;
+    opacity: 0.48;
+    transform-origin: 50% 0%;
+    border-radius: 4px;
+}
+
+.laser-line--l1 { background-color: rgb(0, 240, 255); left: 20%; rotate: 22deg; }
+.laser-line--l2 { background-color: rgb(255, 230, 0); left: 47%; rotate: -4deg; opacity: 0.58; }
+.laser-line--l3 { background-color: rgb(110, 216, 72); left: 54%; rotate: -7deg; opacity: 0.56; }
+.laser-line--l4 { background-color: rgba(255, 255, 255, 0.75); left: 62%; rotate: 0deg; opacity: 0.28; }
+.laser-line--l5 { background-color: rgb(255, 60, 142); left: 72%; rotate: -24deg; opacity: 0.55; }
+.laser-line--l6 { background-color: rgb(160, 96, 255); left: 82%; rotate: -31deg; opacity: 0.48; }
+
+.progress-counter {
+    position: absolute;
+    top: 24px;
+    left: 92px;
+    width: 150px;
+    height: 54px;
+    padding: 3px 14px;
+    background-color: rgba(20, 8, 44, 0.9);
+    border-radius: 27px;
+    border-width: 4px;
+    border-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    font-size: 31px;
     -unity-font-style: bold;
-    min-width: 96px;
-    -unity-text-align: middle-left;
-    text-shadow: 0 0 6px rgb(0, 240, 255);
-}
-
-.drop-label {
-    font-size: 14px;
-    color: rgb(255, 60, 142);
-    -unity-font-style: bold;
-    min-width: 70px;
-    -unity-text-align: middle-right;
-    text-shadow: 0 0 6px rgb(255, 60, 142);
-}
-
-.buildup-bar-container {
-    flex-grow: 1;
-    flex-direction: column;
-    align-items: stretch;
-    margin: 0 10px;
-}
-
-/* 音符はバーの上に浮かせる */
-.music-notes-label {
-    font-size: 14px;
-    color: rgb(0, 240, 255);
     -unity-text-align: middle-center;
-    margin-bottom: 2px;
-    opacity: 0.85;
+    letter-spacing: 0;
 }
 
-/* レインボーグラデを 6 セグメントで近似 */
-.buildup-bar-track {
-    height: 18px;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 9px;
-    border-width: 0;
-    overflow: hidden;
+.question-panel {
+    position: absolute;
+    top: 72px;
+    left: 6%;
+    right: 6%;
+    height: 170px;
     flex-direction: row;
-}
-
-.buildup-rainbow {
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    border-radius: 7px;
-    overflow: hidden;
-}
-
-.buildup-rainbow > VisualElement {
-    height: 100%;
-    flex-grow: 1;
-}
-
-.rainbow-c1 { background-color: rgb(0, 220, 255); }
-.rainbow-c2 { background-color: rgb(120, 220, 100); }
-.rainbow-c3 { background-color: rgb(255, 230, 0); }
-.rainbow-c4 { background-color: rgb(255, 140, 32); }
-.rainbow-c5 { background-color: rgb(255, 60, 180); }
-.rainbow-c6 { background-color: rgb(255, 255, 255); }
-
-/* 進捗フィルは透明（旧仕様の参照を残しつつ無効化） */
-.buildup-bar-fill {
-    height: 100%;
-    width: 0%;
-    background-color: rgba(0, 0, 0, 0);
-}
-
-/* ビートドット行（バーの下） */
-.buildup-dots {
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    height: 14px;
-    margin-top: 4px;
-    padding: 0 4px;
+    padding: 20px 58px;
+    background-image: url("../../Sprites/UI/Generated/question_panel_frame.png");
+    -unity-background-scale-mode: stretch-to-fill;
 }
 
-.beat-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 8px;
-    border-width: 2px;
-    border-color: rgba(255, 255, 255, 0.85);
-    background-color: rgba(255, 255, 255, 0);
+.question-number-badge {
+    width: 104px;
+    height: 104px;
+    min-width: 104px;
+    margin-right: 28px;
+    background-image: url("../../Sprites/UI/Generated/question_number_badge.png");
+    -unity-background-scale-mode: scale-to-fit;
+    color: rgb(16, 5, 38);
+    font-size: 49px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
 }
 
-.beat-dot--filled {
-    background-color: rgb(255, 230, 0);
-    border-color: rgb(255, 230, 0);
-}
-
-/* ─── キャラクターストリップ ─── */
-.characters-strip {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-around;
-    width: 100%;
+.question-text {
     flex-grow: 1;
-    min-height: 110px;
-    max-height: 160px;
-    padding: 0 4px;
-    margin-top: 6px;
+    min-width: 0;
+    white-space: normal;
+    color: rgb(16, 5, 38);
+    font-size: 42px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    letter-spacing: 0;
+}
+
+.instruction-label {
+    position: absolute;
+    top: 192px;
+    left: 88px;
+    width: 310px;
+    height: 68px;
+    padding: 7px 18px;
+    background-color: rgb(202, 248, 60);
+    border-radius: 4px;
+    border-width: 4px;
+    border-color: rgb(20, 8, 44);
+    color: rgb(20, 8, 44);
+    font-size: 32px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    rotate: -6deg;
+}
+
+.answer-cells {
+    position: absolute;
+    top: 270px;
+    left: 0;
+    right: 0;
+    height: 132px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.answer-cell {
+    width: 122px;
+    height: 122px;
+    margin: 6px 18px;
+    background-image: url("../../Sprites/UI/Generated/answer_slot_frame_neon.png");
+    -unity-background-scale-mode: scale-to-fit;
+    color: rgb(255, 255, 255);
+    font-size: 72px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.answer-cell--c0 { -unity-background-image-tint-color: rgb(240, 64, 255); }
+.answer-cell--c1 { -unity-background-image-tint-color: rgb(44, 220, 255); }
+.answer-cell--c2 { -unity-background-image-tint-color: rgb(190, 255, 0); }
+.answer-cell--c3 { -unity-background-image-tint-color: rgb(255, 70, 190); }
+
+.answer-cell--filled {
+    color: rgb(255, 255, 255);
+}
+
+.answer-cell--cursor {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+.hiragana-buttons {
+    position: absolute;
+    top: 402px;
+    left: 31%;
+    width: 38%;
+    height: 272px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.hiragana-key-row {
+    height: 74px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.hiragana-key-row--wide {
+    height: 76px;
+}
+
+.hiragana-button {
+    width: 146px;
+    height: 66px;
+    margin: 4px 8px;
+    padding: 0;
+    color: rgb(255, 255, 255);
+    font-size: 47px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: scale, opacity;
+    transition-duration: 0.08s;
+}
+
+.hiragana-button:hover { scale: 1.05 1.05; }
+.hiragana-button:active { scale: 0.94 0.94; }
+
+.hiragana-button:disabled,
+.hiragana-button.is-used {
+    opacity: 0.9;
+}
+
+.hiragana-button--c0,
+.hiragana-button--c5 { background-image: url("../../Sprites/UI/Generated/key_button_purple.png"); }
+.hiragana-button--c1,
+.hiragana-button--c6 { background-image: url("../../Sprites/UI/Generated/key_button_blue.png"); }
+.hiragana-button--c2,
+.hiragana-button--c7 { background-image: url("../../Sprites/UI/Generated/key_button_red.png"); }
+.hiragana-button--c3 { background-image: url("../../Sprites/UI/Generated/key_button_blue.png"); }
+.hiragana-button--c4 { background-image: url("../../Sprites/UI/Generated/key_button_green.png"); }
+.hiragana-button--c8 { background-image: url("../../Sprites/UI/Generated/key_button_orange.png"); }
+.hiragana-button--c9 { background-image: url("../../Sprites/UI/Generated/key_button_wide_purple.png"); }
+
+.hiragana-button--wide {
+    width: 300px;
+    height: 74px;
+    background-image: url("../../Sprites/UI/Generated/key_button_wide_purple.png");
+}
+
+.hiragana-number-badge {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    font-size: 21px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    background-color: rgba(12, 4, 36, 0.58);
+    border-color: rgb(255, 255, 255);
+    border-width: 2px;
+    border-radius: 3px;
+    rotate: 45deg;
+    -unity-text-align: middle-center;
+    padding: 0;
+}
+
+.countdown-widget {
+    position: absolute;
+    top: 282px;
+    right: 9%;
+    width: 192px;
+    height: 192px;
+    align-items: center;
+    justify-content: center;
+}
+
+.countdown-ring-frame {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../Sprites/UI/Generated/countdown_ring_frame.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.buildup-countdown {
+    width: 132px;
+    height: 132px;
+    color: rgb(255, 255, 255);
+    font-size: 32px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.answer-now-callout {
+    position: absolute;
+    top: 468px;
+    right: 8%;
+    width: 300px;
+    height: 138px;
+    padding: 23px 18px 12px 18px;
+    background-image: url("../../Sprites/UI/Generated/answer_now_burst_frame.png");
+    -unity-background-scale-mode: scale-to-fit;
+    color: rgb(16, 5, 38);
+    font-size: 48px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.control-buttons {
+    display: none;
+}
+
+.characters-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -18px;
+    height: 158px;
+    padding: 0;
 }
 
 .character-slot {
-    flex-grow: 1;
+    position: absolute;
+    bottom: 0;
     height: 100%;
-    max-width: 150px;
+    width: 112px;
     background-size: contain;
     background-repeat: no-repeat;
     -unity-background-scale-mode: scale-to-fit;
-    margin: 0 4px;
 }
 
-/* キャラに少しだけサイズ・傾き差を入れて手描き感を出す */
-.character-slot--v0 { rotate: -4deg; max-width: 170px; }
-.character-slot--v1 { rotate: 3deg;  max-width: 130px; }
-.character-slot--v2 { rotate: -2deg; max-width: 160px; }
-.character-slot--v3 { rotate: 4deg;  max-width: 150px; }
-.character-slot--v4 { rotate: -3deg; max-width: 140px; }
+.character-slot--v0 { left: 4%; rotate: -4deg; width: 142px; }
+.character-slot--v1 { left: 22%; rotate: 5deg; width: 74px; opacity: 0.82; }
+.character-slot--v2 { right: 24%; rotate: -1deg; width: 74px; opacity: 0.82; }
+.character-slot--v3 { right: 17%; rotate: 4deg; width: 76px; opacity: 0.82; }
+.character-slot--v4 { right: 4%; rotate: -3deg; width: 142px; }
 
-/* ─── 結果画面 ─── */
+.cameo-strip {
+    display: none;
+}
+
+.cameo-slot {
+    width: 44px;
+    height: 48px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.65;
+}
+
+.cameo-slot--v0 { rotate: -7deg; }
+.cameo-slot--v1 { rotate: 3deg; }
+.cameo-slot--v2 { rotate: -2deg; }
+.cameo-slot--v3 { rotate: 6deg; }
+.cameo-slot--v4 { rotate: -5deg; }
+
+.blue-overlay,
+.flash-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.blue-overlay { background-color: rgba(0, 80, 255, 0); }
+.flash-overlay { background-color: rgba(255, 255, 220, 0); }
+
+.correct-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 34%;
+    width: 100%;
+    height: 150px;
+    -unity-text-align: middle-center;
+    font-size: 88px;
+    color: rgb(255, 230, 0);
+    -unity-font-style: bold;
+    scale: 0 0;
+}
+
+.incorrect-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 36%;
+    width: 100%;
+    height: 130px;
+    -unity-text-align: middle-center;
+    font-size: 76px;
+    color: rgb(180, 220, 255);
+    -unity-font-style: bold;
+    scale: 0 0;
+}
+
 .result-root {
     position: absolute;
     left: 0;
@@ -161,7 +389,6 @@
     color: rgb(255, 230, 0);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    margin-bottom: 0;
 }
 
 .score-unit {
@@ -197,12 +424,4 @@
     border-color: rgb(0, 240, 255);
     border-radius: 16px;
     border-width: 0;
-}
-
-.retry-button:hover {
-    background-color: rgb(100, 248, 255);
-}
-
-.retry-button:active {
-    scale: 0.95 0.95;
 }

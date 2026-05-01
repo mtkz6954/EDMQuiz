@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 372909551}
   - component: {fileID: 372909550}
+  - component: {fileID: 372909552}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -194,6 +195,155 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372909549}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &372909552
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372909549}
+  m_Enabled: 1
+--- !u!1 &585904209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 585904212}
+  - component: {fileID: 585904211}
+  - component: {fileID: 585904210}
+  m_Layer: 0
+  m_Name: CriWare
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &585904210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585904209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91f529aa944b914449d62b8c40f188fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CriMw.CriWare.Runtime::CriWare.CriAtom
+  acfFile: 
+  cueSheets:
+  - name: BGM
+    acbFile: BGM
+    awbFile: 
+    loaderStatus: 0
+  dspBusSetting: 
+  dontDestroyOnLoad: 0
+  dontRemoveExistsCueSheet: 0
+--- !u!114 &585904211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585904209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e49f339aff054453b2d8287aec75bf2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CriMw.CriWare.Runtime::CriWare.CriWareInitializer
+  initializesFileSystem: 1
+  fileSystemConfig:
+    numberOfLoaders: 16
+    numberOfBinders: 8
+    numberOfInstallers: 2
+    installBufferSize: 0
+    maxPath: 256
+    userAgentString: 
+    minimizeFileDescriptorUsage: 0
+    enableCrcCheck: 0
+    androidDeviceReadBitrate: 50000000
+  initializesAtom: 1
+  atomConfig:
+    acfFileName: 
+    maxVirtualVoices: 32
+    maxVoiceLimitGroups: 32
+    maxCategories: 32
+    maxAisacs: 8
+    maxBusSends: 8
+    maxSequenceEventsPerFrame: 2
+    maxBeatSyncCallbacksPerFrame: 1
+    maxCueLinkCallbacksPerFrame: 1
+    standardVoicePoolConfig:
+      memoryVoices: 16
+      streamingVoices: 8
+    hcaMxVoicePoolConfig:
+      memoryVoices: 0
+      streamingVoices: 0
+    outputSamplingRate: 0
+    usesInGamePreview: 0
+    inGamePreviewMode: 3
+    inGamePreviewConfig:
+      maxPreviewObjects: 200
+      communicationBufferSize: 2048
+      playbackPositionUpdateInterval: 8
+    serverFrequency: 60
+    speakerMapping: 0
+    asrOutputChannels: 0
+    useRandomSeedWithTime: 1
+    categoriesPerPlayback: 4
+    maxFaders: 4
+    maxBuses: 8
+    maxPitch: 2400
+    maxParameterBlocks: 1024
+    soundRendererType: 1
+    keepPlayingSoundOnPause: 1
+    enableSonicSync: 1
+    enableAtomSoundDisabledMode: 0
+    enableAtomSoundDisabledModeLinux: 0
+    editorPcmOutputConfig:
+      enable: 0
+      bufferLength: 4096
+    pcBufferingTime: 0
+    useMicrosoftSpatialSound: 1
+    iosEnableSonicSync: 1
+    iosBufferingTime: 50
+    iosOverrideIPodMusic: 0
+    iosEnableOSNotificationHandling: 1
+    androidEnableSonicSync: 1
+    androidBufferingTime: 133
+    androidStartBufferingTime: 100
+    androidLowLatencyStandardVoicePoolConfig:
+      memoryVoices: 0
+      streamingVoices: 0
+    androidUsesAndroidFastMixer: 1
+    androidForceToUseAsrForDefaultPlayback: 1
+    androidUsesAAudio: 0
+    androidStreamType: 0
+  initializesMana: 1
+  manaConfig:
+    numberOfDecoders: 8
+    numberOfMaxEntries: 4
+    useStreamerManager: 0
+  dontInitializeOnAwake: 0
+  dontDestroyOnLoad: 0
+--- !u!4 &585904212
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585904209}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -286,10 +436,21 @@ MonoBehaviour:
   _confettiParticle: {fileID: 0}
   _mirrorBallTransform: {fileID: 0}
   _funnymonAnimator: {fileID: 0}
+  _spotlights: {fileID: 0}
+  _autoCreateSpotlights: 1
   _uiDocument: {fileID: 766600859}
-  _backgroundPanelName: background-panel
   _blueOverlayName: blue-overlay
+  _flashOverlayName: flash-overlay
   _correctLabelName: correct-label
+  _incorrectLabelName: incorrect-label
+  _questionPanelName: question-panel
+  _backgroundPanelName: background-panel
+  _lasersName: bg-lasers
+  _instructionLabelName: instruction-label
+  _progressCounterName: progress-counter
+  _answerCellsName: answer-cells
+  _hiraganaButtonsName: hiragana-buttons
+  _charactersStripName: characters-strip
 --- !u!114 &766600857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,6 +506,61 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
+--- !u!1 &1160163505
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1160163507}
+  - component: {fileID: 1160163506}
+  m_Layer: 0
+  m_Name: AnswerSpotlight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1160163506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160163505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68b7c10e9363d124d8ec0a5e320ff4a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.AnswerSpotlight
+  _targetIntensity: 1.8
+  _outerRadius: 6
+  _innerRadius: 1
+  _falloff: 0.7
+  _color: {r: 1, g: 0.95, b: 0.85, a: 1}
+  _fadeInSec: 0.15
+  _fadeOutSec: 0.4
+  _autoGenerateStage: 1
+  _stageColor: {r: 0.35, g: 0.35, b: 0.4, a: 1}
+  _stageSize: {x: 28, y: 16}
+  _stageSortingOrder: -50
+--- !u!4 &1160163507
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160163505}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1282612103
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,6 +597,8 @@ MonoBehaviour:
   _seIncorrectCueName: SE_INCORRECT
   _seUiTapCueName: SE_UI_TAP
   _seResultCueName: SE_RESULT
+  _bgmFallbackClip: {fileID: 8300000, guid: 170bc4f566c30814a893c01ec5c7f730, type: 3}
+  _questionIntroClip: {fileID: 8300000, guid: 2e5db2a31af9541449267dce0b8db72c, type: 3}
 --- !u!4 &1282612105
 Transform:
   m_ObjectHideFlags: 0
@@ -569,3 +787,5 @@ SceneRoots:
   - {fileID: 1282612105}
   - {fileID: 635861683}
   - {fileID: 1588476094}
+  - {fileID: 585904212}
+  - {fileID: 1160163507}
