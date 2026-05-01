@@ -47,3 +47,6 @@ ehthumbs.db
 
 # NuGetForUnity
 /Packages/nuget-packages/InstalledPackages*
+
+# uloop generated outputs
+/.uloop/outputs/
