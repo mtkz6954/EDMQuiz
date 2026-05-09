@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/common.uss?fileID=7433441132597879392&amp;guid=4c37e384001252e459b7d6690f125a9a&amp;type=3#common"/>
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/game-panel.uss?fileID=7433441132597879392&amp;guid=fe70c63b014aa1444a66a9ef005b7e09&amp;type=3#game-panel"/>
+    <ui:VisualElement name="display-a-root" class="background-panel">
+        <ui:VisualElement name="question-panel" class="question-panel">
+            <ui:Label name="question-number-badge" text="01" class="question-number-badge"/>
+            <ui:Label name="question-text" text="" enable-rich-text="true" class="question-text"/>
+        </ui:VisualElement>
+        <ui:Label name="progress-counter" text="01/05" class="progress-counter"/>
+        <ui:Label name="instruction-label" text="のってこたえろ！" class="instruction-label"/>
+        <ui:VisualElement name="countdown-widget" class="countdown-widget">
+            <ui:VisualElement picking-mode="Ignore" class="countdown-ring-frame"/>
+            <ui:Label name="buildup-countdown" text="回答まで&#10;0秒" picking-mode="Ignore" class="buildup-countdown"/>
+            <ui:VisualElement name="buildup-dots" picking-mode="Ignore" class="buildup-dots"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

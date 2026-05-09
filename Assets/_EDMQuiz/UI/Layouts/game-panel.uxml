@@ -1,79 +1,53 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/common.uss" />
-    <Style src="../Styles/game-panel.uss" />
-
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/common.uss?fileID=7433441132597879392&amp;guid=4c37e384001252e459b7d6690f125a9a&amp;type=3#common"/>
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/game-panel.uss?fileID=7433441132597879392&amp;guid=fe70c63b014aa1444a66a9ef005b7e09&amp;type=3#game-panel"/>
     <ui:VisualElement name="background-panel" class="background-panel">
-        <ui:VisualElement name="stage-background" class="stage-background" picking-mode="Ignore" />
-        <ui:VisualElement name="stage-light-wash" class="stage-light-wash" picking-mode="Ignore" />
-
-        <ui:VisualElement name="bg-lasers" class="bg-lasers" picking-mode="Ignore">
-            <ui:VisualElement class="laser-line laser-line--l1" />
-            <ui:VisualElement class="laser-line laser-line--l2" />
-            <ui:VisualElement class="laser-line laser-line--l3" />
-            <ui:VisualElement class="laser-line laser-line--l4" />
-            <ui:VisualElement class="laser-line laser-line--l5" />
-            <ui:VisualElement class="laser-line laser-line--l6" />
+        <ui:VisualElement name="stage-light-wash" picking-mode="Ignore" class="stage-light-wash"/>
+        <ui:VisualElement name="question-panel" class="question-panel" style="height: 151px;">
+            <ui:Label name="question-number-badge" text="01" class="question-number-badge"/>
+            <ui:Label name="question-text" text="" enable-rich-text="true" class="question-text"/>
         </ui:VisualElement>
-
-        <ui:Label name="progress-counter" class="progress-counter" text="01/05" />
-
-        <ui:VisualElement name="question-panel" class="question-panel">
-            <ui:Label name="question-number-badge" class="question-number-badge" text="01" />
-            <ui:Label name="question-text" class="question-text" text="" enable-rich-text="true" />
-        </ui:VisualElement>
-
-        <ui:Label name="instruction-label" class="instruction-label" text="のってこたえろ！" />
-
+        <ui:Label name="progress-counter" text="01/05" class="progress-counter" style="overflow: visible;"/>
+        <ui:Label name="instruction-label" text="のってこたえろ！" class="instruction-label" style="top: 198px;"/>
         <ui:VisualElement name="answer-cells" class="answer-cells">
-            <ui:Label class="answer-cell answer-cell--c0" text="" />
-            <ui:Label class="answer-cell answer-cell--c1" text="" />
-            <ui:Label class="answer-cell answer-cell--c2" text="" />
-            <ui:Label class="answer-cell answer-cell--c3" text="" />
+            <ui:Label text="" class="answer-cell answer-cell--c0"/>
+            <ui:Label text="" class="answer-cell answer-cell--c1"/>
+            <ui:Label text="" class="answer-cell answer-cell--c2"/>
+            <ui:Label text="" class="answer-cell answer-cell--c3"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="hiragana-buttons" class="hiragana-buttons" />
-
+        <ui:VisualElement name="hiragana-buttons" class="hiragana-buttons"/>
         <ui:VisualElement name="countdown-widget" class="countdown-widget">
-            <ui:VisualElement class="countdown-ring-frame" picking-mode="Ignore" />
-            <ui:Label name="buildup-countdown" class="buildup-countdown" text="回答まで&#10;0秒" picking-mode="Ignore" />
+            <ui:VisualElement picking-mode="Ignore" class="countdown-ring-frame"/>
+            <ui:Label name="buildup-countdown" text="回答まで&#10;0秒" picking-mode="Ignore" class="buildup-countdown" style="font-size: 26px;"/>
+            <ui:VisualElement name="buildup-dots" picking-mode="Ignore" class="buildup-dots"/>
         </ui:VisualElement>
-
-        <ui:Label name="answer-now-callout" class="answer-now-callout" text="答えてっ！" picking-mode="Ignore" />
-
-        <ui:VisualElement class="control-buttons">
-            <ui:Button name="backspace-button" class="control-button backspace-button" text="消す" />
-            <ui:Button name="confirm-button" class="control-button confirm-button" text="決定" />
-        </ui:VisualElement>
-
+        <ui:Label name="answer-now-callout" text="答えて！" picking-mode="Ignore" class="answer-now-callout" style="font-size: 25px;"/>
         <ui:VisualElement name="characters-strip" class="characters-strip">
-            <ui:VisualElement name="character-slot-0" class="character-slot character-slot--v0" />
-            <ui:VisualElement name="character-slot-1" class="character-slot character-slot--v1" />
-            <ui:VisualElement name="character-slot-2" class="character-slot character-slot--v2" />
-            <ui:VisualElement name="character-slot-3" class="character-slot character-slot--v3" />
-            <ui:VisualElement name="character-slot-4" class="character-slot character-slot--v4" />
+            <ui:VisualElement name="character-slot-0" class="character-slot character-slot--v0"/>
+            <ui:VisualElement name="character-slot-1" class="character-slot character-slot--v1"/>
+            <ui:VisualElement name="character-slot-2" class="character-slot character-slot--v2"/>
+            <ui:VisualElement name="character-slot-3" class="character-slot character-slot--v3"/>
+            <ui:VisualElement name="character-slot-4" class="character-slot character-slot--v4"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="cameo-strip" class="cameo-strip" picking-mode="Ignore">
-            <ui:VisualElement name="cameo-slot-0" class="cameo-slot cameo-slot--v0" />
-            <ui:VisualElement name="cameo-slot-1" class="cameo-slot cameo-slot--v1" />
-            <ui:VisualElement name="cameo-slot-2" class="cameo-slot cameo-slot--v2" />
-            <ui:VisualElement name="cameo-slot-3" class="cameo-slot cameo-slot--v3" />
-            <ui:VisualElement name="cameo-slot-4" class="cameo-slot cameo-slot--v4" />
+        <ui:VisualElement name="cameo-strip" picking-mode="Ignore" class="cameo-strip">
+            <ui:VisualElement name="cameo-slot-0" class="cameo-slot cameo-slot--v0"/>
+            <ui:VisualElement name="cameo-slot-1" class="cameo-slot cameo-slot--v1"/>
+            <ui:VisualElement name="cameo-slot-2" class="cameo-slot cameo-slot--v2"/>
+            <ui:VisualElement name="cameo-slot-3" class="cameo-slot cameo-slot--v3"/>
+            <ui:VisualElement name="cameo-slot-4" class="cameo-slot cameo-slot--v4"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="blue-overlay" class="blue-overlay" picking-mode="Ignore" />
-        <ui:VisualElement name="flash-overlay" class="flash-overlay" picking-mode="Ignore" />
-
-        <ui:Label name="correct-label" class="correct-label" text="正解！" picking-mode="Ignore" />
-        <ui:Label name="incorrect-label" class="incorrect-label" text="ざんねん..." picking-mode="Ignore" />
-
+        <ui:VisualElement name="blue-overlay" picking-mode="Ignore" class="blue-overlay"/>
+        <ui:VisualElement name="flash-overlay" picking-mode="Ignore" class="flash-overlay"/>
+        <ui:VisualElement name="fade-overlay" picking-mode="Ignore" class="fade-overlay"/>
+        <ui:Label name="correct-label" text="正解！" picking-mode="Ignore" class="correct-label"/>
+        <ui:Label name="incorrect-label" text="ざんねん..." picking-mode="Ignore" class="incorrect-label"/>
         <ui:VisualElement name="result-root" class="result-root" style="display: none;">
-            <ui:Label class="result-title" text="結果発表" />
-            <ui:Label name="score-label" class="score-label" text="0" />
-            <ui:Label class="score-unit" text="点" />
-            <ui:Label name="rank-label" class="rank-label" text="" />
-            <ui:Label name="rank-text-label" class="rank-text-label" text="" />
-            <ui:Button name="retry-button" class="retry-button" text="もう一度！" />
+            <ui:Label text="結果発表" class="result-title"/>
+            <ui:Label name="score-label" text="0" class="score-label"/>
+            <ui:Label text="点" class="score-unit"/>
+            <ui:Label name="rank-label" text="" class="rank-label"/>
+            <ui:Label name="rank-text-label" text="" class="rank-text-label"/>
+            <ui:Button name="retry-button" text="もう一度！" class="retry-button"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

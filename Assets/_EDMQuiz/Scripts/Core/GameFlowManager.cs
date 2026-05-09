@@ -17,7 +17,9 @@ namespace EDMQuiz
         public GamePhase CurrentPhase { get; private set; } = GamePhase.Idle;
         public int QuestionIndex { get; private set; }
         public QuizQuestion CurrentQuestion =>
-            _quizDatabase != null ? _quizDatabase.Get(QuestionIndex) : null;
+            _quizDatabase != null && _shuffledIndices != null
+                ? _quizDatabase.Get(_shuffledIndices[QuestionIndex])
+                : null;
 
         private static readonly Subject<GamePhase> _onPhaseChangedSubject = new();
         public static Observable<GamePhase> OnPhaseChanged => _onPhaseChangedSubject;
@@ -33,6 +35,7 @@ namespace EDMQuiz
         private CancellationTokenSource _answerWindowCts;
         private CancellationTokenSource _gameLoopCts;
         private bool _isJudged;
+        private int[] _shuffledIndices;
 
         void Awake()
         {
@@ -65,10 +68,23 @@ namespace EDMQuiz
                 return;
             }
             QuestionIndex = 0;
+            ShuffleQuestions();
             _gameLoopCts?.Cancel();
             _gameLoopCts?.Dispose();
             _gameLoopCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
             RunGameLoopAsync(_gameLoopCts.Token).Forget();
+        }
+
+        private void ShuffleQuestions()
+        {
+            int count = _quizDatabase.Count;
+            _shuffledIndices = new int[count];
+            for (int i = 0; i < count; i++) _shuffledIndices[i] = i;
+            for (int i = count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (_shuffledIndices[i], _shuffledIndices[j]) = (_shuffledIndices[j], _shuffledIndices[i]);
+            }
         }
 
         private async UniTaskVoid RunGameLoopAsync(CancellationToken ct)

@@ -4,15 +4,67 @@
 
     <ui:VisualElement name="title-root" class="title-root">
 
-        <!-- ゲームタイトル -->
-        <ui:Label class="game-title-main" text="ばくれつ" />
-        <ui:Label class="game-title-sub" text="クイズしてる" />
+        <!-- タイトルエリア -->
+        <ui:VisualElement class="title-area">
+            <ui:VisualElement class="title-sparks-row">
+                <ui:Label class="title-spark" text="⚡" />
+                <ui:Label class="game-title-main" text="ばくれつ" />
+                <ui:Label class="title-spark" text="⚡" />
+            </ui:VisualElement>
+            <ui:Label class="game-title-sub" text="クイズしてる" />
+        </ui:VisualElement>
 
         <!-- キャッチコピー -->
-        <ui:Label class="catch-copy" text="BPMに合わせて 答えよ！" />
+        <ui:Label class="catch-copy" enable-rich-text="true" text="&lt;color=#FFE600&gt;BPM&lt;/color&gt;に合わせて 答えよ！" />
+
+        <!-- あそびかた -->
+        <ui:VisualElement name="rules-card" class="rules-card">
+            <ui:Label class="rules-card__title" text="★  あそびかた" />
+
+            <ui:VisualElement class="rule-row">
+                <ui:VisualElement class="rule-badge-wrap">
+                    <ui:Label class="rule-badge-num" text="1" />
+                </ui:VisualElement>
+                <ui:Label class="rules-card__rule" enable-rich-text="true" text="答えが &lt;color=#FF3C8E&gt;４もじ&lt;/color&gt; になるクイズが出るよ" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="rule-row">
+                <ui:VisualElement class="rule-badge-wrap">
+                    <ui:Label class="rule-badge-num" text="2" />
+                </ui:VisualElement>
+                <ui:Label class="rules-card__rule" enable-rich-text="true" text="&lt;color=#00F0FF&gt;タイムカウント&lt;/color&gt;が &lt;color=#FFE600&gt;０&lt;/color&gt; になった瞬間から 拍に合わせて回答！" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="rule-row">
+                <ui:VisualElement class="rule-badge-wrap">
+                    <ui:Label class="rule-badge-num" text="3" />
+                </ui:VisualElement>
+                <ui:Label class="rules-card__rule" enable-rich-text="true" text="答えは 必ず &lt;color=#FF3C8E&gt;４もじ&lt;/color&gt;" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="rule-row">
+                <ui:VisualElement class="rule-badge-wrap">
+                    <ui:Label class="rule-badge-num" text="4" />
+                </ui:VisualElement>
+                <ui:Label class="rules-card__rule" enable-rich-text="true" text="ひらがなボタンを &lt;color=#CAF83C&gt;タップ&lt;/color&gt; して入力　４もじで &lt;color=#FFE600&gt;自動決定！&lt;/color&gt;　まちがえたら &lt;color=#A050FF&gt;「消す」&lt;/color&gt;" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="rules-card__divider" />
+
+            <ui:Label class="rules-card__controls-title" text="▶  そうさほうほう" />
+            <ui:VisualElement class="controls-chips">
+                <ui:VisualElement class="control-chip">
+                    <ui:Label class="control-chip__text" text="📱 スマホ：ボタンをタップ" />
+                </ui:VisualElement>
+                <ui:VisualElement class="control-chip">
+                    <ui:Label class="control-chip__text" text="⌨ PC：数字キー（１〜７）" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label class="rules-card__controls-hint" text="スマホは画面下のひらがなボタンをタップ。消すボタンで1文字削除できます" />
+        </ui:VisualElement>
 
         <!-- スタートボタン -->
-        <ui:Button name="start-button" class="start-button" text="START!" />
+        <ui:Button name="start-button" class="start-button" text="▶  START!" />
 
     </ui:VisualElement>
 </ui:UXML>

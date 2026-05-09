@@ -8,47 +8,186 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 24px 16px;
+}
+
+/* ─── タイトルエリア ─── */
+.title-area {
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.title-sparks-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-spark {
+    font-size: 36px;
+    color: rgb(255, 230, 0);
+    -unity-text-align: middle-center;
+    margin-left: 6px;
+    margin-right: 6px;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgba(255, 180, 0, 0.6);
 }
 
 .game-title-main {
-    font-size: 64px;
+    font-size: 72px;
     color: rgb(255, 60, 142);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    margin-bottom: 4px;
+    white-space: nowrap;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(255, 60, 142, 0.5);
 }
 
 .game-title-sub {
-    font-size: 40px;
+    font-size: 44px;
     color: rgb(0, 240, 255);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    margin-bottom: 32px;
+    margin-top: 4px;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: rgba(0, 240, 255, 0.4);
 }
 
 .catch-copy {
-    font-size: 18px;
-    color: rgb(170, 170, 204);
+    font-size: 20px;
+    color: rgb(240, 240, 255);
     -unity-text-align: middle-center;
-    margin-bottom: 48px;
+    margin-bottom: 20px;
 }
 
+/* ─── あそびかたカード ─── */
+.rules-card {
+    width: 88%;
+    max-width: 540px;
+    background-color: rgba(20, 8, 44, 0.92);
+    border-color: rgb(255, 230, 0);
+    border-width: 2px;
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    align-items: stretch;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(255, 230, 0, 0.2);
+}
+
+.rules-card__title {
+    font-size: 22px;
+    color: rgb(255, 230, 0);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 14px;
+}
+
+/* ─── ルール行（バッジ + テキスト） ─── */
+.rule-row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.rule-badge-wrap {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    border-radius: 13px;
+    background-color: rgb(255, 230, 0);
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.rule-badge-num {
+    font-size: 13px;
+    color: rgb(13, 13, 26);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.rules-card__rule {
+    font-size: 16px;
+    color: rgb(240, 240, 255);
+    -unity-text-align: middle-left;
+    flex-grow: 1;
+    white-space: normal;
+}
+
+.rules-card__divider {
+    height: 2px;
+    background-color: rgba(255, 60, 142, 0.5);
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.rules-card__controls-title {
+    font-size: 18px;
+    color: rgb(110, 216, 72);
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    margin-bottom: 10px;
+}
+
+/* ─── そうさほうほう チップ ─── */
+.controls-chips {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.control-chip {
+    border-color: rgba(0, 240, 255, 0.6);
+    border-width: 1px;
+    border-radius: 16px;
+    padding: 5px 14px;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    background-color: rgba(0, 240, 255, 0.08);
+}
+
+.control-chip__text {
+    font-size: 15px;
+    color: rgb(240, 240, 255);
+    -unity-text-align: middle-center;
+}
+
+.rules-card__controls-hint {
+    font-size: 13px;
+    color: rgb(130, 130, 170);
+    -unity-text-align: middle-left;
+    white-space: normal;
+}
+
+/* ─── スタートボタン ─── */
 .start-button {
-    min-width: 220px;
-    height: 64px;
-    font-size: 28px;
+    min-width: 260px;
+    height: 68px;
+    font-size: 30px;
     -unity-font-style: bold;
     color: rgb(13, 13, 26);
-    background-color: rgb(255, 230, 0);
+    background-color: rgb(255, 214, 0);
     border-color: rgb(255, 230, 0);
-    border-radius: 20px;
+    border-radius: 34px;
     border-width: 0;
+    box-shadow: 0 0 24px rgba(255, 230, 0, 0.7);
+    transition-property: scale, background-color;
+    transition-duration: 0.1s, 0.1s;
+    transition-timing-function: ease, ease;
 }
 
 .start-button:hover {
-    background-color: rgb(255, 245, 100);
+    background-color: rgb(255, 245, 80);
+    box-shadow: 0 0 36px rgba(255, 245, 80, 0.9);
 }
 
 .start-button:active {
     scale: 0.95 0.95;
+    background-color: rgb(240, 200, 0);
 }

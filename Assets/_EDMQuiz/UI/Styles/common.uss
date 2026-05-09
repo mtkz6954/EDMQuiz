@@ -23,8 +23,10 @@
 .background-panel {
     -unity-font-definition: url("../../ReggaeOne-Regular.ttf");
     flex-grow: 1;
-    /* World 空間の Light2D が UI の隙間から見えるよう透過 — Camera の Solid Color (約 rgb(13,13,26)) が下地 */
-    background-color: rgba(20, 4, 48, 0.88);
+    /* 暗紫 wash でベース画面を暗化 → 世界空間の Light2D スポットライト演出が
+       コントラストでクッキリ浮かぶ。完全透明にすると EDM ステージ画像が明るすぎて
+       スポットライトの色が埋もれる。 */
+    background-color: rgba(20, 4, 48, 0.35);
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -53,24 +55,6 @@
     height: 28%;
     background-color: rgba(142, 35, 128, 0.42);
 }
-
-/* スポットライト光線 7本（上から放射） */
-.laser-line {
-    position: absolute;
-    top: -12%;
-    width: 8px;
-    height: 148%;
-    opacity: 0.52;
-    transform-origin: 50% 0%;
-    border-radius: 3px;
-}
-.laser-line--l1 { background-color: rgb(0, 240, 255); left: 32%; rotate: 24deg; }
-.laser-line--l2 { background-color: rgb(110, 216, 72); left: 53%; rotate: -7deg; opacity: 0.62; }
-.laser-line--l3 { background-color: rgb(255, 230, 0); left: 52%; rotate: -3deg; opacity: 0.66; }
-.laser-line--l4 { background-color: rgb(255, 255, 255); left: 62%; rotate: 0deg; opacity: 0.26; }
-.laser-line--l5 { background-color: rgb(255, 60, 142); left: 59%; rotate: -25deg; opacity: 0.56; }
-.laser-line--l6 { background-color: rgb(160, 96, 255); left: 66%; rotate: -32deg; opacity: 0.54; }
-.laser-line--l7 { background-color: rgb(255, 140, 32); left: 51%; rotate: 4deg; opacity: 0.48; }
 
 /* 星屑（小さな白点を散布） */
 .bg-star {

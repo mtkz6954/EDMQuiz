@@ -11,17 +11,31 @@ namespace EDMQuiz
         [SerializeField] private string _gameSceneName = "GameScene";
 
         private Button _startButton;
+        private VisualElement _root;
 
         void OnEnable()
         {
             if (_uiDocument == null) return;
-            _startButton = _uiDocument.rootVisualElement.Q<Button>("start-button");
+            _root = _uiDocument.rootVisualElement;
+
+            _startButton = _root.Q<Button>("start-button");
             if (_startButton != null) _startButton.clicked += OnStartClicked;
+
+            // BGM 未再生なら最初のタップ/クリックで開始（WebGL 自動再生制約対応）
+            if (AudioManager.Instance == null || !AudioManager.Instance.IsBgmPlaying)
+                _root.RegisterCallback<PointerDownEvent>(OnFirstInteraction);
         }
 
         void OnDisable()
         {
             if (_startButton != null) _startButton.clicked -= OnStartClicked;
+            _root?.UnregisterCallback<PointerDownEvent>(OnFirstInteraction);
+        }
+
+        private void OnFirstInteraction(PointerDownEvent evt)
+        {
+            _root?.UnregisterCallback<PointerDownEvent>(OnFirstInteraction);
+            AudioManager.Instance?.PlayBGM(looped: true);
         }
 
         private void OnStartClicked()

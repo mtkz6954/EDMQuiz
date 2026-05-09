@@ -1,0 +1,28 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/common.uss?fileID=7433441132597879392&amp;guid=4c37e384001252e459b7d6690f125a9a&amp;type=3#common"/>
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/game-panel.uss?fileID=7433441132597879392&amp;guid=fe70c63b014aa1444a66a9ef005b7e09&amp;type=3#game-panel"/>
+    <ui:VisualElement name="display-b-root" class="background-panel">
+        <ui:VisualElement name="answer-cells" class="answer-cells">
+            <ui:Label text="" class="answer-cell answer-cell--c0"/>
+            <ui:Label text="" class="answer-cell answer-cell--c1"/>
+            <ui:Label text="" class="answer-cell answer-cell--c2"/>
+            <ui:Label text="" class="answer-cell answer-cell--c3"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="hiragana-buttons" class="hiragana-buttons"/>
+        <ui:Label name="answer-now-callout" text="答えて！" picking-mode="Ignore" class="answer-now-callout"/>
+        <ui:VisualElement name="characters-strip" class="characters-strip">
+            <ui:VisualElement name="character-slot-0" class="character-slot character-slot--v0"/>
+            <ui:VisualElement name="character-slot-1" class="character-slot character-slot--v1"/>
+            <ui:VisualElement name="character-slot-2" class="character-slot character-slot--v2"/>
+            <ui:VisualElement name="character-slot-3" class="character-slot character-slot--v3"/>
+            <ui:VisualElement name="character-slot-4" class="character-slot character-slot--v4"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="cameo-strip" picking-mode="Ignore" class="cameo-strip">
+            <ui:VisualElement name="cameo-slot-0" class="cameo-slot cameo-slot--v0"/>
+            <ui:VisualElement name="cameo-slot-1" class="cameo-slot cameo-slot--v1"/>
+            <ui:VisualElement name="cameo-slot-2" class="cameo-slot cameo-slot--v2"/>
+            <ui:VisualElement name="cameo-slot-3" class="cameo-slot cameo-slot--v3"/>
+            <ui:VisualElement name="cameo-slot-4" class="cameo-slot cameo-slot--v4"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

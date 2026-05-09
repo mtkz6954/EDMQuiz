@@ -101,6 +101,7 @@ namespace EDMQuiz
 
             _spotlight = go.AddComponent<Light2D>();
             _spotlight.lightType            = Light2D.LightType.Point;
+            _spotlight.blendStyleIndex      = 1; // Renderer2D.asset の "Additive"。Multiply 既定だと暗い受光面に光が乗らない
             _spotlight.color                = _color;
             _spotlight.intensity            = 0f;
             _spotlight.pointLightInnerRadius = _innerRadius;

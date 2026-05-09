@@ -22,11 +22,11 @@ namespace EDMQuiz
         [SerializeField] private UIDocument _uiDocument;
         [SerializeField] private string _blueOverlayName       = "blue-overlay";
         [SerializeField] private string _flashOverlayName      = "flash-overlay";
+        [SerializeField] private string _fadeOverlayName       = "fade-overlay";
         [SerializeField] private string _correctLabelName      = "correct-label";
         [SerializeField] private string _incorrectLabelName    = "incorrect-label";
         [SerializeField] private string _questionPanelName     = "question-panel";
         [SerializeField] private string _backgroundPanelName   = "background-panel";
-        [SerializeField] private string _lasersName            = "bg-lasers";
         [SerializeField] private string _instructionLabelName  = "instruction-label";
         [SerializeField] private string _progressCounterName   = "progress-counter";
         [SerializeField] private string _answerCellsName       = "answer-cells";
@@ -40,11 +40,11 @@ namespace EDMQuiz
 
         private VisualElement _blueOverlay;
         private VisualElement _flashOverlay;
+        private VisualElement _fadeOverlay;
         private Label _correctLabel;
         private Label _incorrectLabel;
         private VisualElement _questionPanel;
         private VisualElement _backgroundPanel; // 画面シェイク対象
-        private VisualElement _lasers;
         private VisualElement _instructionLabel;
         private VisualElement _progressCounter;
         private VisualElement _answerCells;
@@ -58,7 +58,7 @@ namespace EDMQuiz
         private Tween _blueOverlayTween;
         private Tween _flashTween;
         private Tween _shakeTween;
-        private Tween _laserSpinTween;
+        private Tween _fadeOverlayTween;
 
         // ダンス Tween キャッシュ — 不正解時に Kill してコケポーズへ滑らかに切替
         private readonly Tween[] _danceBounceTweens = new Tween[CharacterSlotCount];
@@ -87,11 +87,11 @@ namespace EDMQuiz
                 var root = _uiDocument.rootVisualElement;
                 _blueOverlay      = root.Q<VisualElement>(_blueOverlayName);
                 _flashOverlay     = root.Q<VisualElement>(_flashOverlayName);
+                _fadeOverlay      = root.Q<VisualElement>(_fadeOverlayName);
                 _correctLabel     = root.Q<Label>(_correctLabelName);
                 _incorrectLabel   = root.Q<Label>(_incorrectLabelName);
                 _questionPanel    = root.Q<VisualElement>(_questionPanelName);
                 _backgroundPanel  = root.Q<VisualElement>(_backgroundPanelName);
-                _lasers           = root.Q<VisualElement>(_lasersName);
                 _instructionLabel = root.Q<VisualElement>(_instructionLabelName);
                 _progressCounter  = root.Q<VisualElement>(_progressCounterName);
                 _answerCells      = root.Q<VisualElement>(_answerCellsName);
@@ -155,9 +155,8 @@ namespace EDMQuiz
 
                 FlashScreen();              // 白フラッシュ
                 ShakeScreen();              // 画面シェイク (1 回)
-                StartLaserSpin();           // UI レーザー回転
                 CelebrateCharacters();      // キャラクター 720° スピン + 大ジャンプ
-                _spotlights?.Activate();    // ムービングスポットライト (Light2D)
+                _spotlights?.ActivateHype();// ムービングスポットライト Hype モード (光量サイン波 + 回転 + ヨーヨー)
 
                 if (_correctLabel != null)
                 {
@@ -232,6 +231,7 @@ namespace EDMQuiz
         private void OnBeat()
         {
             _beatCounter++;
+            if (GameFlowManager.Instance == null) return;
             var phase = GameFlowManager.Instance.CurrentPhase;
 
             if (phase == GamePhase.BuildUp || phase == GamePhase.AnswerWindow || phase == GamePhase.Next)
@@ -240,14 +240,14 @@ namespace EDMQuiz
                 DanceCharacters();
                 DanceBuildUpLights();
             }
-            else if (phase == GamePhase.Drop && _isCorrectActive)
+            else if ((phase == GamePhase.Drop || phase == GamePhase.FadeOut) && _isCorrectActive)
             {
                 _dropBeatCounter++;
                 // 初期 720° スピン (CHARACTER_SPIN_DUR=1.0s) と被らないよう 2 拍目以降から踊らせる
                 if (_dropBeatCounter >= 2) DanceCharactersHype();
                 DanceUIBeat();
                 DanceCorrectLabel();
-                _spotlights?.OnBeatTick(_dropBeatCounter);
+                if (phase == GamePhase.Drop) _spotlights?.OnBeatTick(_dropBeatCounter);
             }
         }
 
@@ -257,17 +257,27 @@ namespace EDMQuiz
             {
                 case GamePhase.BuildUp:
                     _spotlights?.Activate();
-                    StartLaserSpin();
                     break;
                 case GamePhase.AnswerWindow:
                     _spotlights?.Activate();
                     break;
-                case GamePhase.Question:
                 case GamePhase.FadeOut:
+                    _spotlights?.Deactivate();
+                    // ゲーム画面を BGM フェードと同速で黒くフェードアウト
+                    _fadeOverlayTween?.Kill();
+                    _fadeOverlayTween = _fadeOverlay?.DOFade(1f, GameConstants.BGM_FADE_OUT_SEC)
+                        .SetEase(Ease.Linear);
+                    break;
+                case GamePhase.Next:
+                    // 黒画面から速いフェードインで明るく（UI リセットは CancelVfx が担当）
+                    _fadeOverlayTween?.Kill();
+                    _fadeOverlayTween = _fadeOverlay?.DOFade(0f, GameConstants.SCENE_FADE_IN_SEC)
+                        .SetEase(Ease.OutCubic);
+                    break;
+                case GamePhase.Question:
                 case GamePhase.GameEnd:
                 case GamePhase.Idle:
                     _spotlights?.Deactivate();
-                    StopLaserSpin();
                     break;
             }
         }
@@ -467,24 +477,6 @@ namespace EDMQuiz
                 GameConstants.CORRECT_SHAKE_VIBRATO);
         }
 
-        private void StartLaserSpin()
-        {
-            if (_lasers == null) return;
-            _laserSpinTween?.Kill();
-            float dur = GameConstants.GetBeatDuration() * GameConstants.BEATS_PER_BAR * GameConstants.LASER_SPIN_BARS_PER_TURN;
-            _laserSpinTween = _lasers.DORotateTo(360f, dur)
-                .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Restart);
-        }
-
-        private void StopLaserSpin()
-        {
-            _laserSpinTween?.Kill();
-            _laserSpinTween = null;
-            if (_lasers != null)
-                _lasers.style.rotate = new StyleRotate(StyleKeyword.Null);
-        }
-
         private void CelebrateCharacters()
         {
             for (int i = 0; i < _characterSlots.Length; i++)
@@ -547,8 +539,6 @@ namespace EDMQuiz
             _blueOverlayTween?.Kill();    _blueOverlayTween    = null;
             _flashTween?.Kill();          _flashTween          = null;
             _shakeTween?.Kill();          _shakeTween          = null;
-            StopLaserSpin();
-
             // 継続演出フラグをリセット + スポットライト停止
             _isCorrectActive = false;
             _correctLabelDanceArmed = false;
@@ -567,10 +557,9 @@ namespace EDMQuiz
             if (_correctLabel   != null) _correctLabel.style.scale   = new StyleScale(StyleKeyword.Null);
             if (_incorrectLabel != null) _incorrectLabel.style.scale = new StyleScale(StyleKeyword.Null);
 
-            // 画面シェイク・フラッシュ・レーザー回転の inline をクリア
+            // 画面シェイク・フラッシュの inline をクリア
             if (_backgroundPanel != null) _backgroundPanel.style.translate = new StyleTranslate(StyleKeyword.Null);
             if (_flashOverlay    != null) _flashOverlay.style.opacity      = new StyleFloat(StyleKeyword.Null);
-            if (_lasers          != null) _lasers.style.rotate             = new StyleRotate(StyleKeyword.Null);
 
             // UI ダンス対象の scale inline をクリア
             if (_questionPanel    != null) _questionPanel.style.scale    = new StyleScale(StyleKeyword.Null);

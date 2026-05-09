@@ -15,12 +15,14 @@ namespace EDMQuiz
         // ── ドロップ同期 ────────────────────────────
         // BGM の elapsed 秒数で answer window を開く時刻（BGM のドロップポイント）
         public const float BUILDUP_MUSIC_SEC    = 36.644f;
-        // 回答可能ウィンドウの拍数（4 拍）
-        public const int   ANSWER_WINDOW_BEATS  = 4;
+        // 回答可能ウィンドウの拍数（8 拍）
+        public const int   ANSWER_WINDOW_BEATS  = 8;
         // 判定後 BGM を流したまま結果を見せる秒数
         public const float RESULT_HOLD_SEC      = 10.0f;
         // BGM をゆっくりフェードアウトする秒数
         public const float BGM_FADE_OUT_SEC     = 5.0f;
+        // 次の問題への画面フェードイン秒数（黒→明）
+        public const float SCENE_FADE_IN_SEC    = 0.5f;
 
         // ── BPM 同期 ────────────────────────────────
         public const float BPM            = 152f;
@@ -57,7 +59,6 @@ namespace EDMQuiz
         public const float CORRECT_SHAKE_PX            = 22f;
         public const float CORRECT_SHAKE_DUR           = 0.5f;
         public const int   CORRECT_SHAKE_VIBRATO       = 18;
-        public const float LASER_SPIN_BARS_PER_TURN    = 1f;    // 1 小節で 360° 回転
         public const float CHARACTER_SPIN_DEG          = 720f;  // 2 周
         public const float CHARACTER_SPIN_DUR          = 1.0f;
         public const float CHARACTER_HYPE_BOUNCE_PX    = 45f;   // 大ジャンプ (px)
@@ -80,10 +81,20 @@ namespace EDMQuiz
         public const int   SPOTLIGHT_COUNT             = 6;
         public const float SPOTLIGHT_FIGURE8_SCALE     = 6.8f;
         public const float SPOTLIGHT_BARS_PER_LAP      = 1.5f;
-        public const float SPOTLIGHT_INTENSITY         = 2.25f;
+        public const float SPOTLIGHT_INTENSITY         = 0.8f;
         public const float SPOTLIGHT_OUTER_RADIUS      = 7.5f;
         public const float SPOTLIGHT_INNER_RADIUS      = 0.5f;
         public const float SPOTLIGHT_FALLOFF           = 0.7f;
+
+        // ── 正解時 (Hype) ムービングスポットライト ──
+        public const float SPOTLIGHT_HYPE_INTENSITY_MIN  = 0.8f;
+        public const float SPOTLIGHT_HYPE_INTENSITY_MAX  = 2.5f;
+        public const float SPOTLIGHT_HYPE_PULSE_HZ       = 4f;     // サイン波振動 [回/秒]
+        public const float SPOTLIGHT_HYPE_FIGURE8_SCALE  = 9.5f;   // 軌道振幅 (通常より拡大)
+        public const float SPOTLIGHT_HYPE_BARS_PER_LAP   = 0.75f;  // 通常の半分の小節 = 倍速周回
+        public const float SPOTLIGHT_HYPE_ROTATE_HZ      = 0.75f;  // 軌道全体の回転速度 [回/秒]
+        public const float SPOTLIGHT_HYPE_YOYO_AMPLITUDE = 5f;     // 左右ヨーヨー振幅
+        public const float SPOTLIGHT_HYPE_YOYO_HZ        = 1.2f;   // 左右ヨーヨー周波数 [回/秒]
 
         // ── キャラクターダンス ────────────────────
         public const float DANCE_BOUNCE_PX        = 14f;   // 上方向のバウンス量 (px)

@@ -99,9 +99,12 @@ namespace EDMQuiz
             if (_confirmButton   != null) _confirmButton.clicked   += OnConfirmPressed;
 
             // ルートにキーボードイベントを登録（数字 1-8 でひらがなボタンを押す）
-            _root.focusable = true;
-            _root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
-            _root.Focus();
+            if (UnityEngine.SystemInfo.deviceType != UnityEngine.DeviceType.Handheld)
+            {
+                _root.focusable = true;
+                _root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+                _root.Focus();
+            }
 
             InitCharacterStrip();
             BuildBeatDots();
@@ -249,11 +252,14 @@ namespace EDMQuiz
                 if (keypadNumber == 0)
                     btn.AddToClassList("hiragana-button--wide");
 
-                // キーボード対応の番号バッジ (テンキー配置)
-                var numberBadge = new Label(keypadNumber.ToString());
-                numberBadge.AddToClassList("hiragana-number-badge");
-                numberBadge.pickingMode = PickingMode.Ignore;
-                btn.Add(numberBadge);
+                // キーボードショートカット番号バッジ（PC のみ表示）
+                if (UnityEngine.SystemInfo.deviceType != UnityEngine.DeviceType.Handheld)
+                {
+                    var numberBadge = new Label(keypadNumber.ToString());
+                    numberBadge.AddToClassList("hiragana-number-badge");
+                    numberBadge.pickingMode = PickingMode.Ignore;
+                    btn.Add(numberBadge);
+                }
 
                 GetKeypadRowForOptionIndex(i, rowTop, rowMiddle, rowBottom, rowWide).Add(btn);
                 _hiraganaButtons.Add(btn);

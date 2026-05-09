@@ -51,6 +51,12 @@ namespace EDMQuiz
             _root.style.display = DisplayStyle.Flex;
             _retryButton?.SetEnabled(false);
 
+            // 初期状態
+            if (_retryButton != null)
+                _retryButton.style.scale = new StyleScale(new Scale(Vector3.zero));
+            if (_rankTextLabel != null)
+                _rankTextLabel.style.opacity = 0f;
+
             _root.style.opacity = 0f;
             _root.DOFade(1f, 0.5f);
             await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: ct);
@@ -67,19 +73,38 @@ namespace EDMQuiz
             _rankLabel.text     = rank;
             _rankTextLabel.text = rankLabel;
             _rankLabel.style.scale = new StyleScale(new Scale(Vector3.zero));
+            _rankLabel.style.color = new StyleColor(GetRankColor(rank));
 
             _rankLabel.DOScale(GameConstants.RANK_SCALE_PEAK, GameConstants.RANK_SCALE_DURATION).SetEase(Ease.OutBack);
             await UniTask.Delay(TimeSpan.FromSeconds(GameConstants.RANK_SCALE_DURATION), cancellationToken: ct);
             _rankLabel.DOScale(1f, 0.2f);
 
+            _rankTextLabel?.DOFade(1f, 0.4f);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.4f), cancellationToken: ct);
+
+            if (rank == "S")
+                _rankLabel.DOShakeOnce(0.5f, 8f, 8);
+
             AudioManager.Instance?.PlayResultSE();
+
+            // リトライボタンをバウンスで登場
+            if (_retryButton != null)
+                _retryButton.DOScale(1.1f, 0.25f).SetEase(Ease.OutBack)
+                    .OnComplete(() => _retryButton?.DOScale(1f, 0.12f));
             _retryButton?.SetEnabled(true);
         }
+
+        private static Color GetRankColor(string rank) => rank switch
+        {
+            "S" => new Color(1f, 0.84f, 0f),       // ゴールド
+            "A" => new Color(0f, 0.94f, 1f),        // シアン
+            "B" => new Color(0.43f, 0.85f, 0.28f),  // ライム
+            _   => new Color(0.78f, 0.78f, 0.78f),  // グレー
+        };
 
         private void OnRetryClicked()
         {
             if (_root != null) _root.style.display = DisplayStyle.None;
-            AudioManager.Instance?.PlayBGM();
             GameFlowManager.Instance?.StartGame();
         }
     }

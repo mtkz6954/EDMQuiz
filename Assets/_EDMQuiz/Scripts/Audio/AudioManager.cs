@@ -8,9 +8,9 @@ namespace EDMQuiz
 {
     /// <summary>CRI ADX による BGM/SE 再生 + BPM 同期用クロック提供</summary>
     /// <remarks>
-    /// 標準実装版（Asset Support Addon なし）。CueSheet 名 + Cue 名で参照する。
-    /// シーンの CriAtom コンポーネントに "BGM" / "SE" CueSheet が登録済みであることが前提。
-    /// CueSheet が未ロードの場合は Time.unscaledTime ベースのフォールバックで動作継続（音なし）。
+    /// 暫定版（Asset Support Addon 未インストール）。CueSheet 名 + Cue 名で参照する。
+    /// Asset Support Addon インストール後は CriAtomCueReference パターンへ移行すること。
+    /// CueSheet が未ロードの場合は AudioSource フォールバックで動作継続。
     /// </remarks>
     public class AudioManager : MonoBehaviour
     {
@@ -46,6 +46,7 @@ namespace EDMQuiz
         public bool IsBgmPlaying { get; private set; }
 
         private bool _useFallback;
+        private bool _loopBgm;
 
         void Awake()
         {
@@ -58,13 +59,9 @@ namespace EDMQuiz
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // HotReload でスクリプトが再ロードされると private フィールドはリセットされるが
-            // AudioSource コンポーネント自体は GameObject に残るので GetComponent で復元する
             _audioSource = GetComponent<AudioSource>();
             if (_audioSource == null)
-            {
                 _audioSource = CreateAudioSource(loop: true);
-            }
 
             try
             {
@@ -77,36 +74,18 @@ namespace EDMQuiz
             }
         }
 
-        private void ApplySceneSettingsFrom(AudioManager sceneAudioManager)
+        private void ApplySceneSettingsFrom(AudioManager src)
         {
-            if (sceneAudioManager == null) return;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._bgmCueSheetName))
-                _bgmCueSheetName = sceneAudioManager._bgmCueSheetName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._seCueSheetName))
-                _seCueSheetName = sceneAudioManager._seCueSheetName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._bgmCueName))
-                _bgmCueName = sceneAudioManager._bgmCueName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._seCorrectCueName))
-                _seCorrectCueName = sceneAudioManager._seCorrectCueName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._seIncorrectCueName))
-                _seIncorrectCueName = sceneAudioManager._seIncorrectCueName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._seUiTapCueName))
-                _seUiTapCueName = sceneAudioManager._seUiTapCueName;
-
-            if (!string.IsNullOrEmpty(sceneAudioManager._seResultCueName))
-                _seResultCueName = sceneAudioManager._seResultCueName;
-
-            if (sceneAudioManager._bgmFallbackClip != null)
-                _bgmFallbackClip = sceneAudioManager._bgmFallbackClip;
-
-            if (sceneAudioManager._questionIntroClip != null)
-                _questionIntroClip = sceneAudioManager._questionIntroClip;
+            if (src == null) return;
+            if (!string.IsNullOrEmpty(src._bgmCueSheetName))    _bgmCueSheetName    = src._bgmCueSheetName;
+            if (!string.IsNullOrEmpty(src._seCueSheetName))     _seCueSheetName     = src._seCueSheetName;
+            if (!string.IsNullOrEmpty(src._bgmCueName))         _bgmCueName         = src._bgmCueName;
+            if (!string.IsNullOrEmpty(src._seCorrectCueName))   _seCorrectCueName   = src._seCorrectCueName;
+            if (!string.IsNullOrEmpty(src._seIncorrectCueName)) _seIncorrectCueName = src._seIncorrectCueName;
+            if (!string.IsNullOrEmpty(src._seUiTapCueName))     _seUiTapCueName     = src._seUiTapCueName;
+            if (!string.IsNullOrEmpty(src._seResultCueName))    _seResultCueName    = src._seResultCueName;
+            if (src._bgmFallbackClip != null)    _bgmFallbackClip    = src._bgmFallbackClip;
+            if (src._questionIntroClip != null)  _questionIntroClip  = src._questionIntroClip;
         }
 
         void OnDestroy()
@@ -120,15 +99,16 @@ namespace EDMQuiz
         }
 
         [Button("Play BGM (Editor Test)")]
-        public void PlayBGM()
+        public void PlayBGM(bool looped = false)
         {
+            _loopBgm = looped;
             try
             {
                 var acb = CriAtom.GetAcb(_bgmCueSheetName);
                 if (acb == null)
                 {
                     Debug.LogWarning($"[AudioManager] CueSheet '{_bgmCueSheetName}' 未ロード — フォールバック動作");
-                    UseFallback();
+                    UseFallback(looped);
                     return;
                 }
                 _bgmPlayer.SetCue(acb, _bgmCueName);
@@ -140,20 +120,34 @@ namespace EDMQuiz
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[AudioManager] CRI ADX 再生失敗 — フォールバック動作 ({e.Message})");
-                UseFallback();
+                UseFallback(looped);
             }
         }
 
-        private void UseFallback()
+        void Update()
+        {
+            if (!_loopBgm || _useFallback || _bgmPlayer == null) return;
+            try
+            {
+                if (_bgmPlayback.GetStatus() == CriAtomExPlayback.Status.Removed)
+                {
+                    var acb = CriAtom.GetAcb(_bgmCueSheetName);
+                    if (acb == null) return;
+                    _bgmPlayer.SetCue(acb, _bgmCueName);
+                    _bgmPlayback = _bgmPlayer.Start();
+                }
+            }
+            catch (System.Exception) { }
+        }
+
+        private void UseFallback(bool looped = false)
         {
             _useFallback = true;
             IsBgmPlaying = true;
             if (_bgmFallbackClip != null)
             {
-                // CriWareInitializer の初期化タイミングで既存の AudioSource が無効になる場合があるため
-                // 再生直前に新しい AudioSource を生成して確実に鳴らす
                 if (_audioSource != null) Destroy(_audioSource);
-                _audioSource = CreateAudioSource(loop: true);
+                _audioSource = CreateAudioSource(loop: looped);
                 _audioSource.clip = _bgmFallbackClip;
                 _audioSource.Play();
             }
@@ -162,6 +156,7 @@ namespace EDMQuiz
 
         public void StopBGM()
         {
+            _loopBgm = false;
             _bgmPlayer?.Stop();
             _audioSource?.Stop();
             IsBgmPlaying = false;
@@ -169,54 +164,43 @@ namespace EDMQuiz
         }
 
         /// <summary>BGM をゆっくりフェードアウトさせる。完了後の Stop は呼び出し側の責務。</summary>
-        /// <remarks>
-        /// CRI ADX: SetVolume + Update(playback) で再生中の音量を反映。
-        /// フォールバック AudioSource: 毎フレーム volume を Lerp。
-        /// </remarks>
         public async UniTask FadeBgmOutAsync(float duration, CancellationToken ct)
         {
-            if (!IsBgmPlaying) return;
-            if (duration <= 0f) return;
+            if (!IsBgmPlaying || duration <= 0f) return;
 
             if (_useFallback)
             {
                 if (_audioSource == null) return;
-                float startVolFallback = _audioSource.volume;
-                float tFallback = 0f;
-                while (tFallback < duration && !ct.IsCancellationRequested)
+                float startVol = _audioSource.volume;
+                float t = 0f;
+                while (t < duration && !ct.IsCancellationRequested)
                 {
-                    tFallback += Time.unscaledDeltaTime;
-                    _audioSource.volume = Mathf.Lerp(startVolFallback, 0f,
-                        Mathf.Clamp01(tFallback / duration));
+                    t += Time.unscaledDeltaTime;
+                    _audioSource.volume = Mathf.Lerp(startVol, 0f, Mathf.Clamp01(t / duration));
                     await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 }
-                _audioSource.volume = startVolFallback; // 次回再生のために元のボリュームへ復帰
+                _audioSource.volume = startVol;
                 return;
             }
 
             if (_bgmPlayer == null) return;
-
-            float t = 0f;
-            while (t < duration && !ct.IsCancellationRequested)
+            float tf = 0f;
+            while (tf < duration && !ct.IsCancellationRequested)
             {
-                t += Time.unscaledDeltaTime;
-                float v = Mathf.Lerp(1f, 0f, Mathf.Clamp01(t / duration));
+                tf += Time.unscaledDeltaTime;
+                float v = Mathf.Lerp(1f, 0f, Mathf.Clamp01(tf / duration));
                 _bgmPlayer.SetVolume(v);
                 _bgmPlayer.Update(_bgmPlayback);
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
-
-            // 次回 PlayBGM のためにボリュームをリセット
             _bgmPlayer.SetVolume(1f);
         }
 
         public float PlayQuestionIntroSE()
         {
             if (_questionIntroClip == null) return 0f;
-
             if (_questionIntroAudioSource == null)
                 _questionIntroAudioSource = CreateAudioSource(loop: false);
-
             _questionIntroAudioSource.Stop();
             _questionIntroAudioSource.clip = _questionIntroClip;
             _questionIntroAudioSource.Play();
@@ -233,7 +217,7 @@ namespace EDMQuiz
                 _sePlayer.SetCue(acb, cueName);
                 _sePlayer.Start();
             }
-            catch (System.Exception) { /* CRI 未初期化時は無音で続行 */ }
+            catch (System.Exception) { }
         }
 
         public void PlayCorrectSE()   => PlaySE(_seCorrectCueName);
@@ -245,15 +229,9 @@ namespace EDMQuiz
         public double GetBGMElapsedSeconds()
         {
             if (!IsBgmPlaying) return 0.0;
-
             if (_useFallback)
-                return _audioSource != null && _audioSource.isPlaying
-                    ? _audioSource.time
-                    : 0.0;
-
-            if (_bgmPlayback.GetStatus() != CriAtomExPlayback.Status.Playing)
-                return 0.0;
-
+                return _audioSource != null && _audioSource.isPlaying ? _audioSource.time : 0.0;
+            if (_bgmPlayback.GetStatus() != CriAtomExPlayback.Status.Playing) return 0.0;
             long us = _bgmPlayback.GetTimeSyncedWithAudio();
             return us / 1_000_000.0;
         }
