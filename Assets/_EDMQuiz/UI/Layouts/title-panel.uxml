@@ -1,70 +1,114 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <Style src="../Styles/common.uss" />
-    <Style src="../Styles/title-panel.uss" />
-
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/common.uss?fileID=7433441132597879392&amp;guid=4c37e384001252e459b7d6690f125a9a&amp;type=3#common"/>
+    <Style src="project://database/Assets/_EDMQuiz/UI/Styles/title-panel.uss?fileID=7433441132597879392&amp;guid=ee3c5c83c4deaff458079bee756f4355&amp;type=3#title-panel"/>
     <ui:VisualElement name="title-root" class="title-root">
-
-        <!-- タイトルエリア -->
-        <ui:VisualElement class="title-area">
-            <ui:VisualElement class="title-sparks-row">
-                <ui:Label class="title-spark" text="⚡" />
-                <ui:Label class="game-title-main" text="ばくれつ" />
-                <ui:Label class="title-spark" text="⚡" />
-            </ui:VisualElement>
-            <ui:Label class="game-title-sub" text="クイズしてる" />
+        <ui:VisualElement picking-mode="Ignore" class="title-decor-layer">
+            <ui:VisualElement picking-mode="Ignore" class="title-bg-art"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-vignette"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-spotlight"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-spotlight title-spotlight--cyan"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-spotlight title-spotlight--pink"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-wave title-wave--left"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-wave title-wave--right"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-stage-band"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--01"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--02"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--03"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--04"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--05"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--06"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--07"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--08"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--09"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--10"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--11"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--12"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--13"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--14"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--15"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--16"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--17"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--18"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--19"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-confetti title-confetti--20"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--01"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--02"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--03"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--04"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--05"/>
+            <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--06"/>
+            <ui:Label picking-mode="Ignore" text="✨" class="title-sparkle title-sparkle--01"/>
+            <ui:Label picking-mode="Ignore" text="⚡" class="title-sparkle title-sparkle--02"/>
+            <ui:Label picking-mode="Ignore" text="🎉" class="title-sparkle title-sparkle--03"/>
+            <ui:Label picking-mode="Ignore" text="🎊" class="title-sparkle title-sparkle--04"/>
+            <ui:Label picking-mode="Ignore" text="🎈" class="title-sparkle title-sparkle--05"/>
+            <ui:Label picking-mode="Ignore" text="★" class="title-sparkle title-sparkle--06"/>
+            <ui:Label picking-mode="Ignore" text="✨" class="title-sparkle title-sparkle--07"/>
+            <ui:Label picking-mode="Ignore" text="⚡" class="title-sparkle title-sparkle--08"/>
         </ui:VisualElement>
-
-        <!-- キャッチコピー -->
-        <ui:Label class="catch-copy" enable-rich-text="true" text="&lt;color=#FFE600&gt;BPM&lt;/color&gt;に合わせて 答えよ！" />
-
-        <!-- あそびかた -->
-        <ui:VisualElement name="rules-card" class="rules-card">
-            <ui:Label class="rules-card__title" text="★  あそびかた" />
-
+        <ui:VisualElement class="title-area">
+            <ui:VisualElement class="title-row title-row--main">
+                <ui:Label text="ば" class="title-card title-card--c0"/>
+                <ui:Label text="・" class="title-dot"/>
+                <ui:Label text="く" class="title-card title-card--c1"/>
+                <ui:Label text="・" class="title-dot"/>
+                <ui:Label text="れ" class="title-card title-card--c2"/>
+                <ui:Label text="・" class="title-dot"/>
+                <ui:Label text="つ" class="title-card title-card--c3"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="title-row title-row--sub">
+                <ui:Label text="ク" class="title-card-sm title-card-sm--c4"/>
+                <ui:Label text="イ" class="title-card-sm title-card-sm--c5"/>
+                <ui:Label text="ズ" class="title-card-sm title-card-sm--c6"/>
+                <ui:Label text="し" class="title-card-sm title-card-sm--c7"/>
+                <ui:Label text="て" class="title-card-sm title-card-sm--c8"/>
+                <ui:Label text="る" class="title-card-sm title-card-sm--c9"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label enable-rich-text="true" text="&lt;color=#FF3C8E&gt;リズム&lt;/color&gt;にのって 答えよ！" class="catch-copy catch-copy--ribbon"/>
+        <ui:VisualElement name="rules-card" class="rules-card rules-card--party">
+            <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--tl"/>
+            <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--tr"/>
+            <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--bl"/>
+            <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--br"/>
+            <ui:Label text="★  あそびかた" class="rules-card__title"/>
+            <ui:VisualElement class="rules-card__quick-row">
+                <ui:Label text="4もじ" class="quick-note quick-note--pink"/>
+                <ui:Label text="BPMで回答" class="quick-note quick-note--cyan"/>
+                <ui:Label text="自動決定" class="quick-note quick-note--lime"/>
+            </ui:VisualElement>
             <ui:VisualElement class="rule-row">
                 <ui:VisualElement class="rule-badge-wrap">
-                    <ui:Label class="rule-badge-num" text="1" />
+                    <ui:Label text="1" class="rule-badge-num"/>
                 </ui:VisualElement>
-                <ui:Label class="rules-card__rule" enable-rich-text="true" text="答えが &lt;color=#FF3C8E&gt;４もじ&lt;/color&gt; になるクイズが出るよ" />
+                <ui:Label enable-rich-text="true" text="答えが &lt;color=#FF3C8E&gt;４もじ&lt;/color&gt; になるクイズが出るよ" class="rules-card__rule"/>
             </ui:VisualElement>
-
             <ui:VisualElement class="rule-row">
                 <ui:VisualElement class="rule-badge-wrap">
-                    <ui:Label class="rule-badge-num" text="2" />
+                    <ui:Label text="2" class="rule-badge-num"/>
                 </ui:VisualElement>
-                <ui:Label class="rules-card__rule" enable-rich-text="true" text="&lt;color=#00F0FF&gt;タイムカウント&lt;/color&gt;が &lt;color=#FFE600&gt;０&lt;/color&gt; になった瞬間から 拍に合わせて回答！" />
+                <ui:Label enable-rich-text="true" text="&lt;color=#00F0FF&gt;タイムカウント&lt;/color&gt;が &lt;color=#FFE600&gt;０&lt;/color&gt; になった瞬間から 拍に合わせて回答！" class="rules-card__rule"/>
             </ui:VisualElement>
-
             <ui:VisualElement class="rule-row">
                 <ui:VisualElement class="rule-badge-wrap">
-                    <ui:Label class="rule-badge-num" text="3" />
+                    <ui:Label text="3" class="rule-badge-num"/>
                 </ui:VisualElement>
-                <ui:Label class="rules-card__rule" enable-rich-text="true" text="答えは 必ず &lt;color=#FF3C8E&gt;４もじ&lt;/color&gt;" />
+                <ui:Label enable-rich-text="true" text="[スマホ] ひらがなボタンを &lt;color=#CAF83C&gt;タップ&lt;/color&gt; して入力！&#10;[PC]1～9の数字キーで入力！" class="rules-card__rule"/>
             </ui:VisualElement>
-
-            <ui:VisualElement class="rule-row">
-                <ui:VisualElement class="rule-badge-wrap">
-                    <ui:Label class="rule-badge-num" text="4" />
-                </ui:VisualElement>
-                <ui:Label class="rules-card__rule" enable-rich-text="true" text="ひらがなボタンを &lt;color=#CAF83C&gt;タップ&lt;/color&gt; して入力　４もじで &lt;color=#FFE600&gt;自動決定！&lt;/color&gt;　まちがえたら &lt;color=#A050FF&gt;「消す」&lt;/color&gt;" />
-            </ui:VisualElement>
-
-            <ui:VisualElement class="rules-card__divider" />
-
-            <ui:Label class="rules-card__controls-title" text="▶  そうさほうほう" />
+            <ui:VisualElement class="rules-card__divider"/>
+            <ui:Label text="▶  そうさほうほう" class="rules-card__controls-title"/>
             <ui:VisualElement class="controls-chips">
                 <ui:VisualElement class="control-chip">
-                    <ui:Label class="control-chip__text" text="📱 スマホ：ボタンをタップ" />
+                    <ui:Label text="📱 スマホ：ボタンをタップ" class="control-chip__text"/>
                 </ui:VisualElement>
                 <ui:VisualElement class="control-chip">
-                    <ui:Label class="control-chip__text" text="⌨ PC：数字キー（１〜７）" />
+                    <ui:Label text="⌨ PC：数字キー（１〜9）" class="control-chip__text"/>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label class="rules-card__controls-hint" text="スマホは画面下のひらがなボタンをタップ。消すボタンで1文字削除できます" />
         </ui:VisualElement>
-
-        <!-- スタートボタン -->
-        <ui:Button name="start-button" class="start-button" text="▶  START!" />
-
+        <ui:VisualElement class="start-button-wrap">
+            <ui:Label text="▼ TAP TO START ▼" class="start-banner"/>
+            <ui:Button name="start-button" text="▶  START!" class="start-button start-button--festive"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

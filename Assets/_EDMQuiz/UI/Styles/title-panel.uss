@@ -1,101 +1,369 @@
 /* ======================================================
-   title-panel.uss  —  タイトル画面スタイル
+   title-panel.uss  —  タイトル画面（パーティ風リニューアル）
+   方針: ゲーム本編の .hiragana-button--cN 回転カラー表現を
+         タイトルにも適用し、視覚的連続性を持たせる
 ====================================================== */
 
 .title-root {
+    -unity-font-definition: url("../../ReggaeOne-Regular.ttf");
     flex-grow: 1;
     background-color: rgb(13, 13, 26);
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 24px 16px;
+    justify-content: flex-start;
+    padding: 8px 12px;
+    overflow: hidden;
 }
 
-/* ─── タイトルエリア ─── */
+/* ────────────────────────────────────────────────────────
+   1. 装飾レイヤ (絶対配置・タップ無効)
+────────────────────────────────────────────────────────── */
+
+.title-decor-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.title-bg-art {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../Sprites/Backgrounds/title-edm-stage-bg.png");
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0.82;
+}
+
+.title-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(4, 4, 14, 0.26);
+}
+
+/* スポットライト: 上部に紫の柔らかい光 */
+.title-spotlight {
+    position: absolute;
+    top: -56px;
+    left: 13%;
+    right: 13%;
+    height: 250px;
+    background-color: rgba(160, 96, 255, 0.22);
+    border-radius: 50%;
+}
+
+.title-spotlight--cyan {
+    top: 44px;
+    left: -10%;
+    right: 66%;
+    height: 360px;
+    background-color: rgba(0, 240, 255, 0.16);
+    rotate: -18deg;
+}
+
+.title-spotlight--pink {
+    top: 52px;
+    left: 66%;
+    right: -10%;
+    height: 360px;
+    background-color: rgba(255, 60, 142, 0.16);
+    rotate: 18deg;
+}
+
+.title-wave {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-width: 6px;
+    border-color: rgba(202, 248, 60, 0.62);
+    border-radius: 50%;
+    opacity: 0.62;
+}
+
+.title-wave--left {
+    top: 250px;
+    left: -94px;
+}
+
+.title-wave--right {
+    top: 258px;
+    right: -94px;
+}
+
+/* ステージ床: 下部の薄紫帯 */
+.title-stage-band {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20%;
+    background-color: rgba(142, 35, 128, 0.34);
+}
+
+/* ─── 紙吹雪 (×20) ─── */
+.title-confetti {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.title-confetti--01 { top:  5%; left:  8%; background-color: rgb(255, 230,   0); rotate: -22deg; width: 12px; height: 12px; }
+.title-confetti--02 { top:  8%; left: 18%; background-color: rgb(  0, 240, 255); rotate:  14deg; width: 10px; height: 10px; }
+.title-confetti--03 { top: 12%; left: 28%; background-color: rgb(255,  60, 142); rotate:  35deg; width: 14px; height: 14px; }
+.title-confetti--04 { top:  6%; left: 42%; background-color: rgb(110, 216,  72); rotate:  -7deg; width: 11px; height: 11px; }
+.title-confetti--05 { top: 15%; left: 55%; background-color: rgb(255,  96, 192); rotate:  18deg; width: 13px; height: 13px; }
+.title-confetti--06 { top:  9%; left: 68%; background-color: rgb(160,  96, 255); rotate: -30deg; width: 10px; height: 10px; }
+.title-confetti--07 { top: 14%; left: 80%; background-color: rgb(255, 140,  32); rotate:   5deg; width: 12px; height: 12px; border-radius: 50%; }
+.title-confetti--08 { top:  7%; left: 92%; background-color: rgb(255, 230,   0); rotate: -42deg; width: 11px; height: 11px; }
+.title-confetti--09 { top: 22%; left:  5%; background-color: rgb(  0, 240, 255); rotate:  22deg; width: 13px; height: 13px; }
+.title-confetti--10 { top: 18%; left: 14%; background-color: rgb(255,  60, 142); rotate: -10deg; width: 10px; height: 10px; border-radius: 50%; }
+.title-confetti--11 { top: 24%; left: 35%; background-color: rgb(110, 216,  72); rotate:  30deg; width: 12px; height: 12px; }
+.title-confetti--12 { top: 20%; left: 48%; background-color: rgb(160,  96, 255); rotate: -18deg; width: 14px; height: 14px; }
+.title-confetti--13 { top: 26%; left: 62%; background-color: rgb(255, 230,   0); rotate:   8deg; width: 10px; height: 10px; border-radius: 50%; }
+.title-confetti--14 { top: 23%; left: 74%; background-color: rgb(255, 140,  32); rotate: -25deg; width: 11px; height: 11px; }
+.title-confetti--15 { top: 30%; left: 85%; background-color: rgb(255,  96, 192); rotate:  40deg; width: 12px; height: 12px; }
+.title-confetti--16 { top: 36%; left:  9%; background-color: rgb(160,  96, 255); rotate:  -3deg; width: 10px; height: 10px; }
+.title-confetti--17 { top: 38%; left: 22%; background-color: rgb(  0, 240, 255); rotate:  12deg; width: 13px; height: 13px; border-radius: 50%; }
+.title-confetti--18 { top: 42%; left: 88%; background-color: rgb(255,  60, 142); rotate: -36deg; width: 11px; height: 11px; }
+.title-confetti--19 { top: 40%; left: 95%; background-color: rgb(110, 216,  72); rotate:  27deg; width: 10px; height: 10px; }
+.title-confetti--20 { top: 48%; left: 50%; background-color: rgb(255, 230,   0); rotate: -14deg; width: 12px; height: 12px; border-radius: 50%; }
+
+/* ─── ストリーマー (×6) ─── */
+.title-streamer {
+    position: absolute;
+    width: 90px;
+    height: 6px;
+    border-radius: 3px;
+    opacity: 0.65;
+}
+
+.title-streamer--01 { top: 18%; left: -4%;  background-color: rgb(255,  60, 142); rotate: -50deg; width: 110px; }
+.title-streamer--02 { top:  8%; left: 30%;  background-color: rgb(  0, 240, 255); rotate: -30deg; width:  94px; }
+.title-streamer--03 { top: 24%; left: 55%;  background-color: rgb(255, 230,   0); rotate:  20deg; width: 100px; }
+.title-streamer--04 { top: 30%; left: 75%;  background-color: rgb(160,  96, 255); rotate:  45deg; width:  88px; }
+.title-streamer--05 { top: 42%; left: 12%;  background-color: rgb(110, 216,  72); rotate: -15deg; width:  96px; }
+.title-streamer--06 { top: 46%; left: 62%;  background-color: rgb(255, 140,  32); rotate:  35deg; width: 102px; }
+
+/* ─── スパークル絵文字 (×8) ─── */
+.title-sparkle {
+    position: absolute;
+    -unity-text-align: middle-center;
+    opacity: 0.92;
+}
+
+.title-sparkle--01 { top:  4%; left: 14%; font-size: 32px; color: rgb(255, 230,   0); rotate:  -8deg; }
+.title-sparkle--02 { top:  6%; left: 74%; font-size: 36px; color: rgb(255, 230,   0); rotate:  12deg; }
+.title-sparkle--03 { top: 18%; left: 38%; font-size: 30px; color: rgb(255, 255, 255); rotate:   0deg; }
+.title-sparkle--04 { top: 14%; left: 88%; font-size: 28px; color: rgb(255, 255, 255); rotate:  -6deg; }
+.title-sparkle--05 { top: 30%; left:  6%; font-size: 32px; color: rgb(255,  60, 142); rotate:  10deg; }
+.title-sparkle--06 { top: 34%; left: 92%; font-size: 30px; color: rgb(  0, 240, 255); rotate:  -4deg; }
+.title-sparkle--07 { top: 44%; left: 32%; font-size: 30px; color: rgb(255,  96, 192); rotate:  16deg; }
+.title-sparkle--08 { top: 46%; left: 80%; font-size: 32px; color: rgb(255, 230,   0); rotate:  -14deg; }
+
+/* ────────────────────────────────────────────────────────
+   2. タイトル文字 (2段カード式)
+────────────────────────────────────────────────────────── */
+
 .title-area {
     align-items: center;
-    margin-bottom: 16px;
+    margin-top: 6px;
+    margin-bottom: 2px;
 }
 
-.title-sparks-row {
+.title-row {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    flex-wrap: nowrap;
+    max-width: 96%;
 }
 
-.title-spark {
-    font-size: 36px;
+.title-row--main {
+    margin-bottom: 2px;
+}
+
+.title-row--sub {
+    margin-top: 0;
+}
+
+/* ─── メインカード (ば・く・れ・つ) ─── */
+.title-card {
+    width: 84px;
+    height: 90px;
+    border-width: 5px;
+    border-color: rgb(20, 8, 44);
+    border-radius: 14px;
+    margin-left: 3px;
+    margin-right: 3px;
+    font-size: 64px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(20, 8, 44);
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.22);
+    flex-shrink: 0;
+}
+
+/* ─── サブカード (クイズしてる) ─── */
+.title-card-sm {
+    width: 54px;
+    height: 60px;
+    border-width: 4px;
+    border-color: rgb(20, 8, 44);
+    border-radius: 12px;
+    margin-left: 2px;
+    margin-right: 2px;
+    font-size: 42px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(20, 8, 44);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.14);
+    flex-shrink: 0;
+}
+
+/* ─── 中黒ドット ─── */
+.title-dot {
+    font-size: 38px;
     color: rgb(255, 230, 0);
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
-    margin-left: 6px;
-    margin-right: 6px;
+    align-self: center;
+    margin-left: -2px;
+    margin-right: -2px;
     -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgba(255, 180, 0, 0.6);
+    -unity-text-outline-color: rgba(255, 230, 0, 0.6);
 }
 
-.game-title-main {
-    font-size: 72px;
-    color: rgb(255, 60, 142);
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    white-space: nowrap;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(255, 60, 142, 0.5);
-}
+/* ─── カラーバリエ (ゲーム本編 .hiragana-button--cN と同パレット循環) ─── */
+.title-card--c0    { background-color: rgb(255, 230,   0); rotate: -3deg; }                                /* ば: 黄 */
+.title-card--c1    { background-color: rgb(  0, 240, 255); rotate:  2deg; }                                /* く: シアン */
+.title-card--c2    { background-color: rgb(255,  60, 142); rotate: -2deg; color: rgb(255, 255, 255); }     /* れ: ピンク */
+.title-card--c3    { background-color: rgb(110, 216,  72); rotate:  3deg; }                                /* つ: ライム */
 
-.game-title-sub {
-    font-size: 44px;
-    color: rgb(0, 240, 255);
+.title-card-sm--c4 { background-color: rgb(255, 255, 255); rotate: -4deg; }                                /* ク: 白 */
+.title-card-sm--c5 { background-color: rgb(255, 140,  32); rotate:  4deg; color: rgb(255, 255, 255); }     /* イ: オレンジ */
+.title-card-sm--c6 { background-color: rgb(160,  96, 255); rotate: -3deg; color: rgb(255, 255, 255); }     /* ズ: 紫 */
+.title-card-sm--c7 { background-color: rgb(255,  96, 192); rotate:  2deg; color: rgb(255, 255, 255); }     /* し: マゼンタ */
+.title-card-sm--c8 { background-color: rgb(255, 230,   0); rotate: -2deg; }                                /* て: 黄 */
+.title-card-sm--c9 { background-color: rgb(  0, 240, 255); rotate:  3deg; }                                /* る: シアン */
+
+/* ────────────────────────────────────────────────────────
+   3. キャッチコピー (黄緑テープ風リボン)
+────────────────────────────────────────────────────────── */
+
+.catch-copy--ribbon {
+    background-color: rgb(202, 248, 60);
+    color: rgb(20, 8, 44);
+    font-size: 18px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
+    padding: 4px 18px;
+    border-width: 3px;
+    border-color: rgb(20, 8, 44);
+    border-radius: 4px;
+    rotate: -4deg;
+    align-self: center;
     margin-top: 4px;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: rgba(0, 240, 255, 0.4);
+    margin-bottom: 8px;
+    box-shadow: 0 0 18px rgba(202, 248, 60, 0.26);
 }
 
-.catch-copy {
-    font-size: 20px;
-    color: rgb(240, 240, 255);
-    -unity-text-align: middle-center;
-    margin-bottom: 20px;
-}
+/* ────────────────────────────────────────────────────────
+   4. あそびかたカード (パーティ装飾)
+────────────────────────────────────────────────────────── */
 
-/* ─── あそびかたカード ─── */
 .rules-card {
-    width: 88%;
-    max-width: 540px;
-    background-color: rgba(20, 8, 44, 0.92);
+    width: 86%;
+    max-width: 500px;
+    background-color: rgba(13, 13, 26, 0.88);
     border-color: rgb(255, 230, 0);
     border-width: 2px;
     border-radius: 18px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
+    padding: 10px 18px;
+    margin-bottom: 8px;
     align-items: stretch;
     flex-shrink: 0;
     box-shadow: 0 0 16px rgba(255, 230, 0, 0.2);
 }
 
-.rules-card__title {
+/* パーティ装飾モディファイア: ピンクネオン枠 + 軽い傾き */
+.rules-card--party {
+    border-color: rgb(255, 60, 142);
+    border-width: 3px;
+    border-radius: 22px;
+    rotate: -0.8deg;
+    background-color: rgba(13, 13, 26, 0.9);
+    box-shadow: 0 0 30px rgba(255, 60, 142, 0.42);
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+/* コーナースパークル */
+.rules-card-corner {
+    position: absolute;
     font-size: 22px;
+    -unity-font-style: bold;
+    color: rgb(255, 230, 0);
+    -unity-text-align: middle-center;
+    width: 30px;
+    height: 30px;
+}
+
+.rules-card-corner--tl { top:  -10px; left:  -8px;  rotate: -12deg; color: rgb(255, 230,   0); }
+.rules-card-corner--tr { top:  -10px; right: -8px;  rotate:  16deg; color: rgb(  0, 240, 255); }
+.rules-card-corner--bl { bottom: -8px; left:  -8px; rotate:  -8deg; color: rgb(255,  96, 192); }
+.rules-card-corner--br { bottom: -8px; right: -8px; rotate:  14deg; color: rgb(255, 230,   0); }
+
+.rules-card__title {
+    font-size: 18px;
     color: rgb(255, 230, 0);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
 }
 
-/* ─── ルール行（バッジ + テキスト） ─── */
+.rules-card__quick-row {
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 7px;
+    flex-wrap: wrap;
+}
+
+.quick-note {
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(13, 13, 26);
+    border-radius: 13px;
+    padding: 3px 11px;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-bottom: 2px;
+}
+
+.quick-note--pink { background-color: rgb(255, 60, 142); color: rgb(255, 255, 255); }
+.quick-note--cyan { background-color: rgb(0, 240, 255); }
+.quick-note--lime { background-color: rgb(202, 248, 60); }
+
+/* ─── ルール行 ─── */
 .rule-row {
     flex-direction: row;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
 .rule-badge-wrap {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-    min-height: 26px;
-    border-radius: 13px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 12px;
     background-color: rgb(255, 230, 0);
     align-items: center;
     justify-content: center;
@@ -112,7 +380,7 @@
 }
 
 .rules-card__rule {
-    font-size: 16px;
+    font-size: 13px;
     color: rgb(240, 240, 255);
     -unity-text-align: middle-left;
     flex-grow: 1;
@@ -120,71 +388,103 @@
 }
 
 .rules-card__divider {
-    height: 2px;
+    height: 1px;
     background-color: rgba(255, 60, 142, 0.5);
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 6px;
+    margin-bottom: 6px;
 }
 
 .rules-card__controls-title {
-    font-size: 18px;
+    font-size: 15px;
     color: rgb(110, 216, 72);
     -unity-font-style: bold;
     -unity-text-align: middle-left;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 /* ─── そうさほうほう チップ ─── */
 .controls-chips {
     flex-direction: row;
     justify-content: flex-start;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     flex-wrap: wrap;
 }
 
 .control-chip {
     border-color: rgba(0, 240, 255, 0.6);
     border-width: 1px;
-    border-radius: 16px;
-    padding: 5px 14px;
-    margin-right: 10px;
-    margin-bottom: 6px;
+    border-radius: 14px;
+    padding: 3px 12px;
+    margin-right: 8px;
+    margin-bottom: 4px;
     background-color: rgba(0, 240, 255, 0.08);
 }
 
 .control-chip__text {
-    font-size: 15px;
+    font-size: 13px;
     color: rgb(240, 240, 255);
     -unity-text-align: middle-center;
 }
 
 .rules-card__controls-hint {
-    font-size: 13px;
+    font-size: 11px;
     color: rgb(130, 130, 170);
     -unity-text-align: middle-left;
     white-space: normal;
 }
 
-/* ─── スタートボタン ─── */
+/* ────────────────────────────────────────────────────────
+   5. START エリア
+────────────────────────────────────────────────────────── */
+
+.start-button-wrap {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0;
+}
+
+.start-banner {
+    font-size: 15px;
+    color: rgb(255, 230, 0);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    padding: 2px 12px;
+    background-color: rgba(13, 13, 26, 0.72);
+    border-width: 2px;
+    border-color: rgb(255, 60, 142);
+    border-radius: 6px;
+    rotate: -2deg;
+    margin-bottom: 4px;
+}
+
 .start-button {
     min-width: 260px;
-    height: 68px;
-    font-size: 30px;
+    height: 60px;
+    font-size: 29px;
     -unity-font-style: bold;
     color: rgb(13, 13, 26);
     background-color: rgb(255, 214, 0);
     border-color: rgb(255, 230, 0);
-    border-radius: 34px;
+    border-radius: 28px;
     border-width: 0;
-    box-shadow: 0 0 24px rgba(255, 230, 0, 0.7);
+    box-shadow: 0 0 28px rgba(255, 230, 0, 0.74);
     transition-property: scale, background-color;
     transition-duration: 0.1s, 0.1s;
     transition-timing-function: ease, ease;
 }
 
+/* パーティ装飾モディファイア: 濃枠 + 強グロー */
+.start-button--festive {
+    border-width: 4px;
+    border-color: rgb(20, 8, 44);
+    box-shadow: 0 0 36px rgba(255, 230, 0, 0.85);
+    transition-property: scale, background-color, box-shadow;
+    transition-duration: 0.12s, 0.12s, 0.18s;
+}
+
 .start-button:hover {
     background-color: rgb(255, 245, 80);
-    box-shadow: 0 0 36px rgba(255, 245, 80, 0.9);
+    box-shadow: 0 0 44px rgba(255, 245, 80, 0.95);
 }
 
 .start-button:active {
