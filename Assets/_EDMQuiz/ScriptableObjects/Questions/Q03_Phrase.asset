@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizQuestion
   questionText: "\u7E70\u308A\u8FD4\u3057\u4F7F\u308F\u308C\u308B\u5370\u8C61\u7684\u306A\u30E1\u30ED\u30C7\u30A3\u306E\u65AD\u7247\u306E\u3053\u3068\u306F\uFF1F"
   hiraganaOptions:
-  - "\u3075"
-  - "\u308C"
-  - "\u30FC"
   - "\u305A"
-  - "\u307F"
-  - "\u304F"
   - "\u305F"
+  - "\u3075"
+  - "\u305B"
+  - "\u308C"
+  - "\u307F"
+  - "\u30FC"
+  - "\u304F"
   - "\u306E"
   correctAnswer: "\u3075\u308C\u30FC\u305A"
