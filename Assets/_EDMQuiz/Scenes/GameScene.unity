@@ -642,8 +642,10 @@ MonoBehaviour:
   _seIncorrectCueName: SE_INCORRECT
   _seUiTapCueName: SE_UI_TAP
   _seResultCueName: SE_RESULT
-  _bgmFallbackClip: {fileID: 8300000, guid: 170bc4f566c30814a893c01ec5c7f730, type: 3}
+  _bgmFallbackClip: {fileID: 8300000, guid: c5e6fc229d3811c4a959e52b712992be, type: 3}
   _questionIntroClip: {fileID: 8300000, guid: 2e5db2a31af9541449267dce0b8db72c, type: 3}
+  _incorrectBgmClips:
+  - {fileID: 8300000, guid: a30c7e583ac747a42b3f88c47856ef78, type: 3}
 --- !u!4 &1282612105
 Transform:
   m_ObjectHideFlags: 0

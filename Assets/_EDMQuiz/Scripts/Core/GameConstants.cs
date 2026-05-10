@@ -14,13 +14,14 @@ namespace EDMQuiz
 
         // ── ドロップ同期 ────────────────────────────
         // BGM の elapsed 秒数で answer window を開く時刻（BGM のドロップポイント）
-        public const float BUILDUP_MUSIC_SEC    = 36.644f;
+        // FourBeatDrop_fixed_024.mp3 の Drop は 23.5 秒地点（実測微調整）
+        public const float BUILDUP_MUSIC_SEC    = 23.5f;
         // 回答可能ウィンドウの拍数（8 拍）
         public const int   ANSWER_WINDOW_BEATS  = 8;
         // 判定後 BGM を流したまま結果を見せる秒数
-        public const float RESULT_HOLD_SEC      = 10.0f;
+        public const float RESULT_HOLD_SEC      = 5.0f;
         // BGM をゆっくりフェードアウトする秒数
-        public const float BGM_FADE_OUT_SEC     = 5.0f;
+        public const float BGM_FADE_OUT_SEC     = 2.5f;
         // 次の問題への画面フェードイン秒数（黒→明）
         public const float SCENE_FADE_IN_SEC    = 0.5f;
 

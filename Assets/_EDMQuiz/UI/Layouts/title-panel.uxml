@@ -66,13 +66,13 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:Label enable-rich-text="true" text="&lt;color=#FF3C8E&gt;リズム&lt;/color&gt;にのって 答えよ！" class="catch-copy catch-copy--ribbon"/>
-        <ui:VisualElement name="rules-card" class="rules-card rules-card--party">
+        <ui:VisualElement name="rules-card" class="rules-card rules-card--party" style="top: 2%;">
             <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--tl"/>
             <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--tr"/>
             <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--bl"/>
             <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--br"/>
             <ui:Label text="★  あそびかた" class="rules-card__title"/>
-            <ui:VisualElement class="rules-card__quick-row">
+            <ui:VisualElement name="VisualElement" class="rules-card__quick-row" style="display: none;">
                 <ui:Label text="4もじ" class="quick-note quick-note--pink"/>
                 <ui:Label text="BPMで回答" class="quick-note quick-note--cyan"/>
                 <ui:Label text="自動決定" class="quick-note quick-note--lime"/>
@@ -89,11 +89,11 @@
                 </ui:VisualElement>
                 <ui:Label enable-rich-text="true" text="&lt;color=#00F0FF&gt;タイムカウント&lt;/color&gt;が &lt;color=#FFE600&gt;０&lt;/color&gt; になった瞬間から 拍に合わせて回答！" class="rules-card__rule"/>
             </ui:VisualElement>
-            <ui:VisualElement class="rule-row">
+            <ui:VisualElement class="rule-row" style="display: flex;">
                 <ui:VisualElement class="rule-badge-wrap">
                     <ui:Label text="3" class="rule-badge-num"/>
                 </ui:VisualElement>
-                <ui:Label enable-rich-text="true" text="[スマホ] ひらがなボタンを &lt;color=#CAF83C&gt;タップ&lt;/color&gt; して入力！&#10;[PC]1～9の数字キーで入力！" class="rules-card__rule"/>
+                <ui:Label enable-rich-text="true" text="盛り上がりの最高潮でクイズに回答しよう！" class="rules-card__rule"/>
             </ui:VisualElement>
             <ui:VisualElement class="rules-card__divider"/>
             <ui:Label text="▶  そうさほうほう" class="rules-card__controls-title"/>
@@ -106,8 +106,8 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement class="start-button-wrap">
-            <ui:Label text="▼ TAP TO START ▼" class="start-banner"/>
+        <ui:VisualElement class="start-button-wrap" style="top: 5%;">
+            <ui:Label text="▼ TAP TO START ▼" class="start-banner" style="display: none;"/>
             <ui:Button name="start-button" text="▶  START!" class="start-button start-button--festive"/>
         </ui:VisualElement>
     </ui:VisualElement>

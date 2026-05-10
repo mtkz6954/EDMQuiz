@@ -36,17 +36,28 @@ namespace EDMQuiz
         [SerializeField] private AudioClip _bgmFallbackClip;
         [BoxGroup("Fallback")]
         [SerializeField] private AudioClip _questionIntroClip;
+        [BoxGroup("Fallback")]
+        [SerializeField] private AudioClip[] _incorrectBgmClips;
 
         private CriAtomExPlayer _bgmPlayer;
         private CriAtomExPlayer _sePlayer;
         private CriAtomExPlayback _bgmPlayback;
         private AudioSource _audioSource;
         private AudioSource _questionIntroAudioSource;
+        private AudioSource _incorrectAudioSource;
+
+        private const float INCORRECT_BGM_CROSSFADE_SEC = 0.15f;
+        private const float BGM_VOLUME = 0.6f;
 
         public bool IsBgmPlaying { get; private set; }
 
         private bool _useFallback;
         private bool _loopBgm;
+
+        // BGM_MAIN ブロックシーケンス構成（AtomCraft 側と整合させる）
+        // Block 0 = Main / Block 1 = Incorrect_A / Block 2 = Incorrect_B
+        private const int BGM_BLOCK_INCORRECT_MIN = 1;  // 含む
+        private const int BGM_BLOCK_INCORRECT_MAX = 3;  // 含まない
 
         void Awake()
         {
@@ -86,6 +97,8 @@ namespace EDMQuiz
             if (!string.IsNullOrEmpty(src._seResultCueName))    _seResultCueName    = src._seResultCueName;
             if (src._bgmFallbackClip != null)    _bgmFallbackClip    = src._bgmFallbackClip;
             if (src._questionIntroClip != null)  _questionIntroClip  = src._questionIntroClip;
+            if (src._incorrectBgmClips != null && src._incorrectBgmClips.Length > 0)
+                _incorrectBgmClips = src._incorrectBgmClips;
         }
 
         void OnDestroy()
@@ -101,6 +114,14 @@ namespace EDMQuiz
         [Button("Play BGM (Editor Test)")]
         public void PlayBGM(bool looped = false)
         {
+            // 直前の不正解 BGM が残っていれば停止（次問題は通常 BGM 先頭から）
+            if (_incorrectAudioSource != null)
+            {
+                _incorrectAudioSource.Stop();
+                _incorrectAudioSource.volume = BGM_VOLUME;
+            }
+            if (_audioSource != null) _audioSource.volume = BGM_VOLUME;
+
             _loopBgm = looped;
             try
             {
@@ -111,6 +132,7 @@ namespace EDMQuiz
                     UseFallback(looped);
                     return;
                 }
+                _bgmPlayer.SetVolume(BGM_VOLUME);
                 _bgmPlayer.SetCue(acb, _bgmCueName);
                 _bgmPlayback = _bgmPlayer.Start();
                 IsBgmPlaying = true;
@@ -149,6 +171,7 @@ namespace EDMQuiz
                 if (_audioSource != null) Destroy(_audioSource);
                 _audioSource = CreateAudioSource(loop: looped);
                 _audioSource.clip = _bgmFallbackClip;
+                _audioSource.volume = BGM_VOLUME;
                 _audioSource.Play();
             }
             BpmClock.Instance?.StartClock();
@@ -159,8 +182,66 @@ namespace EDMQuiz
             _loopBgm = false;
             _bgmPlayer?.Stop();
             _audioSource?.Stop();
+            _incorrectAudioSource?.Stop();
             IsBgmPlaying = false;
             BpmClock.Instance?.StopClock();
+        }
+
+        /// <summary>
+        /// 不正解 BGM への切替を要求する。
+        /// CRI ADX 動作中: BGM_MAIN ブロックシーケンスの不正解ブロック（A/B のランダム選択）へ次境界で遷移予約。
+        /// AudioSource フォールバック動作中: _incorrectBgmClips からランダム選択した AudioClip を別 AudioSource でクロスフェード再生。
+        /// BGM 停止中・素材未設定時は何もしない。
+        /// </summary>
+        public void RequestIncorrectBgmBlock()
+        {
+            if (!IsBgmPlaying) return;
+
+            // CRI ADX パス（AtomCraft で BGM_MAIN がブロックシーケンス化されている場合）
+            if (!_useFallback && _bgmPlayer != null)
+            {
+                try
+                {
+                    if (_bgmPlayback.GetStatus() == CriAtomExPlayback.Status.Playing)
+                    {
+                        int blockIndex = UnityEngine.Random.Range(BGM_BLOCK_INCORRECT_MIN, BGM_BLOCK_INCORRECT_MAX);
+                        _bgmPlayback.SetNextBlockIndex(blockIndex);
+                        return;
+                    }
+                }
+                catch (System.Exception) { }
+            }
+
+            // AudioSource フォールバックパス（クロスフェード）
+            if (_incorrectBgmClips == null || _incorrectBgmClips.Length == 0) return;
+            var clip = _incorrectBgmClips[UnityEngine.Random.Range(0, _incorrectBgmClips.Length)];
+            if (clip == null) return;
+
+            if (_incorrectAudioSource == null)
+                _incorrectAudioSource = CreateAudioSource(loop: false);
+
+            _incorrectAudioSource.Stop();
+            _incorrectAudioSource.clip = clip;
+            _incorrectAudioSource.volume = 0f;
+            _incorrectAudioSource.Play();
+
+            CrossfadeToIncorrectBgmAsync(INCORRECT_BGM_CROSSFADE_SEC).Forget();
+        }
+
+        private async UniTaskVoid CrossfadeToIncorrectBgmAsync(float duration)
+        {
+            if (_audioSource == null || _incorrectAudioSource == null) return;
+            float startMain = _audioSource.volume;
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(t / duration);
+                if (_audioSource != null)          _audioSource.volume          = Mathf.Lerp(startMain, 0f, k);
+                if (_incorrectAudioSource != null) _incorrectAudioSource.volume = Mathf.Lerp(0f, BGM_VOLUME, k);
+                await UniTask.Yield(PlayerLoopTiming.Update);
+            }
+            if (_audioSource != null) _audioSource.Stop();
         }
 
         /// <summary>BGM をゆっくりフェードアウトさせる。完了後の Stop は呼び出し側の責務。</summary>
@@ -170,16 +251,19 @@ namespace EDMQuiz
 
             if (_useFallback)
             {
-                if (_audioSource == null) return;
-                float startVol = _audioSource.volume;
+                float startMain = _audioSource != null ? _audioSource.volume : 0f;
+                float startInc  = _incorrectAudioSource != null ? _incorrectAudioSource.volume : 0f;
                 float t = 0f;
                 while (t < duration && !ct.IsCancellationRequested)
                 {
                     t += Time.unscaledDeltaTime;
-                    _audioSource.volume = Mathf.Lerp(startVol, 0f, Mathf.Clamp01(t / duration));
+                    float k = Mathf.Clamp01(t / duration);
+                    if (_audioSource != null)          _audioSource.volume          = Mathf.Lerp(startMain, 0f, k);
+                    if (_incorrectAudioSource != null) _incorrectAudioSource.volume = Mathf.Lerp(startInc,  0f, k);
                     await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 }
-                _audioSource.volume = startVol;
+                if (_audioSource != null)          _audioSource.volume          = startMain;
+                if (_incorrectAudioSource != null) _incorrectAudioSource.volume = startInc;
                 return;
             }
 
@@ -188,12 +272,12 @@ namespace EDMQuiz
             while (tf < duration && !ct.IsCancellationRequested)
             {
                 tf += Time.unscaledDeltaTime;
-                float v = Mathf.Lerp(1f, 0f, Mathf.Clamp01(tf / duration));
+                float v = Mathf.Lerp(BGM_VOLUME, 0f, Mathf.Clamp01(tf / duration));
                 _bgmPlayer.SetVolume(v);
                 _bgmPlayer.Update(_bgmPlayback);
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
-            _bgmPlayer.SetVolume(1f);
+            _bgmPlayer.SetVolume(BGM_VOLUME);
         }
 
         public float PlayQuestionIntroSE()

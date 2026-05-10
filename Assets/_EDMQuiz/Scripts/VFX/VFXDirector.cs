@@ -186,6 +186,7 @@ namespace EDMQuiz
             try
             {
                 if (_funnymonAnimator != null) _funnymonAnimator.SetTrigger("FailDance");
+                AudioManager.Instance?.RequestIncorrectBgmBlock();
                 AudioManager.Instance?.PlayIncorrectSE();
 
                 // 一瞬静止（スベり感演出）— ignoreTimeScale: true で UniTask はスケール外待機
