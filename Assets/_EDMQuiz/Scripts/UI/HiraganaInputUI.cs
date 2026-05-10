@@ -11,8 +11,8 @@ namespace EDMQuiz
     {
         [SerializeField] private UIDocument _uiDocument;
 
-        /// <summary>下部キャラクターストリップに表示する Sprite (5体分を Inspector で割り当て)</summary>
-        [SerializeField] private Sprite[] _characterSprites = new Sprite[5];
+        /// <summary>キャラクター表示に使う Sprite (10体分を Inspector で割り当て: 0-4 が character-slot、5-9 が cameo-slot)</summary>
+        [SerializeField] private Sprite[] _characterSprites = new Sprite[10];
 
         // ひらがなボタン用のカラーバリエ（USS の .hiragana-button--c0〜c9 に対応）
         private const int HIRAGANA_COLOR_VARIANTS = 10;
@@ -485,16 +485,24 @@ namespace EDMQuiz
 
         private void InitCharacterStrip()
         {
-            if (_characterSlots == null) return;
-            for (int i = 0; i < _characterSlots.Length; i++)
+            if (_characterSlots != null)
             {
-                if (i < _characterSprites.Length && _characterSprites[i] != null)
+                for (int i = 0; i < _characterSlots.Length; i++)
                 {
-                    var background = new StyleBackground(_characterSprites[i]);
-                    if (_characterSlots[i] != null)
-                        _characterSlots[i].style.backgroundImage = background;
-                    if (_cameoSlots != null && i < _cameoSlots.Length && _cameoSlots[i] != null)
-                        _cameoSlots[i].style.backgroundImage = background;
+                    if (_characterSlots[i] == null) continue;
+                    if (i < _characterSprites.Length && _characterSprites[i] != null)
+                        _characterSlots[i].style.backgroundImage = new StyleBackground(_characterSprites[i]);
+                }
+            }
+
+            if (_cameoSlots != null)
+            {
+                for (int i = 0; i < _cameoSlots.Length; i++)
+                {
+                    if (_cameoSlots[i] == null) continue;
+                    int spriteIndex = i + 5;
+                    if (spriteIndex < _characterSprites.Length && _characterSprites[spriteIndex] != null)
+                        _cameoSlots[i].style.backgroundImage = new StyleBackground(_characterSprites[spriteIndex]);
                 }
             }
         }

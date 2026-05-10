@@ -32,11 +32,15 @@ namespace EDMQuiz
         [SerializeField] private string _answerCellsName       = "answer-cells";
         [SerializeField] private string _hiraganaButtonsName   = "hiragana-buttons";
         [SerializeField] private string _charactersStripName   = "characters-strip";
+        [SerializeField] private string _cameoStripName        = "cameo-strip";
 
-        private const int CharacterSlotCount = 5;
+        private const int MainSlotCount   = 5;
+        private const int CameoSlotCount  = 5;
+        private const int CharacterSlotCount = MainSlotCount + CameoSlotCount;
 
         // コケる方向（スロットごと）— ±90° の左右倒れを混在させて笑い感を出す
-        private static readonly float[] TumbleDirections = { -1f, 1f, -1f, 1f, -1f };
+        // 0-4: character-slot, 5-9: cameo-slot
+        private static readonly float[] TumbleDirections = { -1f, 1f, -1f, 1f, -1f, 1f, -1f, 1f, -1f, 1f };
 
         private VisualElement _blueOverlay;
         private VisualElement _flashOverlay;
@@ -100,8 +104,15 @@ namespace EDMQuiz
                 var charactersStrip = root.Q<VisualElement>(_charactersStripName);
                 if (charactersStrip != null)
                 {
-                    for (int i = 0; i < CharacterSlotCount; i++)
+                    for (int i = 0; i < MainSlotCount; i++)
                         _characterSlots[i] = charactersStrip.Q<VisualElement>($"character-slot-{i}");
+                }
+
+                var cameoStrip = root.Q<VisualElement>(_cameoStripName);
+                if (cameoStrip != null)
+                {
+                    for (int i = 0; i < CameoSlotCount; i++)
+                        _characterSlots[MainSlotCount + i] = cameoStrip.Q<VisualElement>($"cameo-slot-{i}");
                 }
             }
 

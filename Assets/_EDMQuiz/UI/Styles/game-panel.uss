@@ -331,23 +331,29 @@
 .character-slot--v4 { right: 4%; rotate: -3deg; width: 142px; }
 
 .cameo-strip {
-    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .cameo-slot {
-    width: 44px;
-    height: 48px;
+    position: absolute;
+    width: 58px;
+    height: 66px;
     background-size: contain;
     background-repeat: no-repeat;
     -unity-background-scale-mode: scale-to-fit;
-    opacity: 0.65;
+    opacity: 0.75;
 }
 
-.cameo-slot--v0 { rotate: -7deg; }
-.cameo-slot--v1 { rotate: 3deg; }
-.cameo-slot--v2 { rotate: -2deg; }
-.cameo-slot--v3 { rotate: 6deg; }
-.cameo-slot--v4 { rotate: -5deg; }
+/* 左右の端に散らして配置 — ボタン・回答セル・メインキャラと重ならない縦帯に収める */
+.cameo-slot--v0 { left: 320;   bottom: 158px;  rotate: -7deg; }
+.cameo-slot--v1 { left: 35;   bottom: 168px; rotate:  3deg; }
+.cameo-slot--v2 { left: 220;   bottom: 270px; rotate: -2deg; }
+.cameo-slot--v3 { right: 10;  bottom: 140px;  rotate:  6deg; }
+.cameo-slot--v4 { right: 330;  bottom: 300px; rotate: -5deg; }
 
 .blue-overlay,
 .flash-overlay {

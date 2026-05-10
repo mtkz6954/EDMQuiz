@@ -524,10 +524,15 @@ MonoBehaviour:
   _uiDocument: {fileID: 766600859}
   _characterSprites:
   - {fileID: 3450650631031593306, guid: d41d29cb065869d48b17bf7439ed4496, type: 3}
+  - {fileID: 6663931324463357496, guid: 00752e6aa234e7940bc07d8e260e4380, type: 3}
   - {fileID: 1528512257082979843, guid: af9fbb5dba5f40745ae2016f49989f73, type: 3}
+  - {fileID: 7010190460763089721, guid: 6175fc9fe98eb2742a36ae4c1352bd1d, type: 3}
   - {fileID: 2000681234434713606, guid: 99c2cb1f020442144a0162a4cb5a0d3c, type: 3}
+  - {fileID: 7183591556526030011, guid: 228b6fab76b9a91488c28c1212be1aa8, type: 3}
   - {fileID: -8345775776728668544, guid: 955167cd958e6ab43a5ad0df5471dc33, type: 3}
+  - {fileID: 6855531612429143475, guid: 92e4833e790b33b4cb8674f2d8a5c04f, type: 3}
   - {fileID: 787748267886922183, guid: 69961dd623d6e914cae943156522f4e8, type: 3}
+  - {fileID: 528303425260415807, guid: 4fe60686f2edc164e93d088fa79c55fd, type: 3}
 --- !u!114 &766600859
 MonoBehaviour:
   m_ObjectHideFlags: 0
