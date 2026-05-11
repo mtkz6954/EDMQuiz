@@ -40,6 +40,10 @@ namespace EDMQuiz
 
         private void OnStartClicked()
         {
+            // WebGL の自動再生ポリシー対策: PointerDownEvent が UI Toolkit Button に
+            // 捕捉されて root まで bubble しない場合でも、click 経由で必ず AudioContext を解除する
+            if (AudioManager.Instance != null && !AudioManager.Instance.IsBgmPlaying)
+                AudioManager.Instance.PlayBGM(looped: true);
             AudioManager.Instance?.PlayUiTapSE();
             SceneManager.LoadScene(_gameSceneName);
         }

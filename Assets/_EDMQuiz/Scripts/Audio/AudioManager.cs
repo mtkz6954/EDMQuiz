@@ -38,6 +38,14 @@ namespace EDMQuiz
         [SerializeField] private AudioClip _questionIntroClip;
         [BoxGroup("Fallback")]
         [SerializeField] private AudioClip[] _incorrectBgmClips;
+        [BoxGroup("Fallback")]
+        [SerializeField] private AudioClip _correctSeClip;
+        [BoxGroup("Fallback")]
+        [SerializeField] private AudioClip _incorrectSeClip;
+        [BoxGroup("Fallback")]
+        [SerializeField] private AudioClip _uiTapSeClip;
+        [BoxGroup("Fallback")]
+        [SerializeField] private AudioClip _resultSeClip;
 
         private CriAtomExPlayer _bgmPlayer;
         private CriAtomExPlayer _sePlayer;
@@ -45,6 +53,7 @@ namespace EDMQuiz
         private AudioSource _audioSource;
         private AudioSource _questionIntroAudioSource;
         private AudioSource _incorrectAudioSource;
+        private AudioSource _seAudioSource;
 
         private const float INCORRECT_BGM_CROSSFADE_SEC = 0.15f;
         private const float BGM_VOLUME = 0.6f;
@@ -293,21 +302,37 @@ namespace EDMQuiz
 
         public void PlaySE(string cueName)
         {
-            if (string.IsNullOrEmpty(cueName)) return;
-            try
-            {
-                var acb = CriAtom.GetAcb(_seCueSheetName);
-                if (acb == null) return;
-                _sePlayer.SetCue(acb, cueName);
-                _sePlayer.Start();
-            }
-            catch (System.Exception) { }
+            PlaySE(cueName, fallbackClip: null);
         }
 
-        public void PlayCorrectSE()   => PlaySE(_seCorrectCueName);
-        public void PlayIncorrectSE() => PlaySE(_seIncorrectCueName);
-        public void PlayUiTapSE()     => PlaySE(_seUiTapCueName);
-        public void PlayResultSE()    => PlaySE(_seResultCueName);
+        private void PlaySE(string cueName, AudioClip fallbackClip)
+        {
+            // CRI ADX 経路（ACB がロード済みなら最優先）
+            if (!string.IsNullOrEmpty(cueName) && _sePlayer != null)
+            {
+                try
+                {
+                    var acb = CriAtom.GetAcb(_seCueSheetName);
+                    if (acb != null)
+                    {
+                        _sePlayer.SetCue(acb, cueName);
+                        _sePlayer.Start();
+                        return;
+                    }
+                }
+                catch (System.Exception) { /* fall through to AudioSource fallback */ }
+            }
+
+            // AudioSource フォールバック（WebGL で CRI が初期化失敗していても鳴らす）
+            if (fallbackClip == null) return;
+            if (_seAudioSource == null) _seAudioSource = CreateAudioSource(loop: false);
+            _seAudioSource.PlayOneShot(fallbackClip);
+        }
+
+        public void PlayCorrectSE()   => PlaySE(_seCorrectCueName,   _correctSeClip);
+        public void PlayIncorrectSE() => PlaySE(_seIncorrectCueName, _incorrectSeClip);
+        public void PlayUiTapSE()     => PlaySE(_seUiTapCueName,     _uiTapSeClip);
+        public void PlayResultSE()    => PlaySE(_seResultCueName,    _resultSeClip);
 
         /// <summary>BGM 再生開始からの経過秒数（リズム同期用、サンプル精度）</summary>
         public double GetBGMElapsedSeconds()
