@@ -229,6 +229,10 @@ MonoBehaviour:
   _questionIntroClip: {fileID: 0}
   _incorrectBgmClips:
   - {fileID: 8300000, guid: a30c7e583ac747a42b3f88c47856ef78, type: 3}
+  _correctSeClip: {fileID: 0}
+  _incorrectSeClip: {fileID: 0}
+  _uiTapSeClip: {fileID: 0}
+  _resultSeClip: {fileID: 0}
 --- !u!4 &879998069
 Transform:
   m_ObjectHideFlags: 0

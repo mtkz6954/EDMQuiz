@@ -496,6 +496,7 @@ MonoBehaviour:
   _answerCellsName: answer-cells
   _hiraganaButtonsName: hiragana-buttons
   _charactersStripName: characters-strip
+  _cameoStripName: cameo-strip
 --- !u!114 &766600857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -651,6 +652,10 @@ MonoBehaviour:
   _questionIntroClip: {fileID: 8300000, guid: 2e5db2a31af9541449267dce0b8db72c, type: 3}
   _incorrectBgmClips:
   - {fileID: 8300000, guid: a30c7e583ac747a42b3f88c47856ef78, type: 3}
+  _correctSeClip: {fileID: 0}
+  _incorrectSeClip: {fileID: 0}
+  _uiTapSeClip: {fileID: 0}
+  _resultSeClip: {fileID: 0}
 --- !u!4 &1282612105
 Transform:
   m_ObjectHideFlags: 0

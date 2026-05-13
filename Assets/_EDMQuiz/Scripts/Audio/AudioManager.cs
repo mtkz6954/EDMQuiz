@@ -177,10 +177,13 @@ namespace EDMQuiz
             IsBgmPlaying = true;
             if (_bgmFallbackClip != null)
             {
-                if (_audioSource != null) Destroy(_audioSource);
-                _audioSource = CreateAudioSource(loop: looped);
+                // AudioSource は 1 個を使い回す（Destroy + Create はやらない）
+                if (_audioSource == null) _audioSource = CreateAudioSource(loop: looped);
+                _audioSource.Stop();
+                _audioSource.loop = looped;
                 _audioSource.clip = _bgmFallbackClip;
                 _audioSource.volume = BGM_VOLUME;
+                _audioSource.time = 0f;
                 _audioSource.Play();
             }
             BpmClock.Instance?.StartClock();
@@ -192,6 +195,8 @@ namespace EDMQuiz
             _bgmPlayer?.Stop();
             _audioSource?.Stop();
             _incorrectAudioSource?.Stop();
+            // 長尺 clip を PlayOneShot した場合の取りこぼし対策
+            _seAudioSource?.Stop();
             IsBgmPlaying = false;
             BpmClock.Instance?.StopClock();
         }
@@ -271,8 +276,9 @@ namespace EDMQuiz
                     if (_incorrectAudioSource != null) _incorrectAudioSource.volume = Mathf.Lerp(startInc,  0f, k);
                     await UniTask.Yield(PlayerLoopTiming.Update, ct);
                 }
-                if (_audioSource != null)          _audioSource.volume          = startMain;
-                if (_incorrectAudioSource != null) _incorrectAudioSource.volume = startInc;
+                // フェード完了後は 0 に固定（呼び出し側の StopBGM で停止される）
+                if (_audioSource != null)          _audioSource.volume          = 0f;
+                if (_incorrectAudioSource != null) _incorrectAudioSource.volume = 0f;
                 return;
             }
 
@@ -324,7 +330,11 @@ namespace EDMQuiz
             }
 
             // AudioSource フォールバック（WebGL で CRI が初期化失敗していても鳴らす）
-            if (fallbackClip == null) return;
+            if (fallbackClip == null)
+            {
+                Debug.LogWarning($"[AudioManager] SE '{cueName}' フォールバック未アサイン — 無音");
+                return;
+            }
             if (_seAudioSource == null) _seAudioSource = CreateAudioSource(loop: false);
             _seAudioSource.PlayOneShot(fallbackClip);
         }
