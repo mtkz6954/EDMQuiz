@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40437722177024eb0db7fd73bcb627, type: 3}
+  m_Name: Q77_Kamakura
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizQuestion
+  questionText: "頼朝が幕府を開いた、大仏でも有名な神奈川県の地名は？"
+  hiraganaOptions:
+  - "か"
+  - "な"
+  - "く"
+  - "も"
+  - "ら"
+  - "ふ"
+  - "ま"
+  - "い"
+  correctAnswer: "かまくら"

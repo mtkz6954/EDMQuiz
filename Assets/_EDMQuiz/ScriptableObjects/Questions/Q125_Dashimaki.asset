@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40437722177024eb0db7fd73bcb627, type: 3}
+  m_Name: Q125_Dashimaki
+  m_EditorClassIdentifier: Assembly-CSharp::EDMQuiz.QuizQuestion
+  questionText: "卵をだしと一緒に何層にも巻いて焼く料理は「○○○○たまご」？"
+  hiraganaOptions:
+  - "ま"
+  - "き"
+  - "ん"
+  - "せ"
+  - "し"
+  - "ふ"
+  - "ね"
+  - "だ"
+  correctAnswer: "だしまき"
