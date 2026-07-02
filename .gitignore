@@ -52,3 +52,7 @@ ehthumbs.db
 /.uloop/outputs/
 
 /production/qa/
+
+# Unity recovery scenes
+/Assets/_Recovery/
+/Assets/_Recovery.meta
