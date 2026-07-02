@@ -555,27 +555,29 @@
 }
 
 .layout-portrait .hiragana-buttons {
-    /* 拡大ボタン 3 行分の高さを確保（92px × 3 + 余白）
+    /* 拡大ボタン 3 行分の高さを確保（120px × 3 + 余白）
        下部アンカーに切替（キャラ帯のすぐ上） */
-    height: 300px;
+    height: 370px;
     top: auto;
     bottom: 180px;
 }
 
 .layout-portrait .hiragana-key-row {
-    height: 92px;
+    height: 120px;
 }
 
 .layout-portrait .hiragana-button {
-    width: 190px;
-    height: 84px;
-    margin: 4px 8px;
-    font-size: 52px;
+    /* 誤タップ防止: ボタン拡大 + 間隔拡大（横 24px / 縦 20px）。
+       3 列制約: (width + margin×2) × 3 = 660px ≤ コンテナ幅 662px (= 720 × 92%) */
+    width: 196px;
+    height: 100px;
+    margin: 10px 12px;
+    font-size: 58px;
 }
 
 .layout-portrait .hiragana-button--wide {
-    width: 480px;
-    height: 84px;
+    width: 500px;
+    height: 100px;
 }
 
 .layout-portrait .answer-cell {
@@ -585,16 +587,16 @@
 }
 
 .layout-portrait .answer-cells {
-    /* ボタン群の直上へ（bottom: 180 + 300 + 30） */
+    /* ボタン群の直上へ（bottom: 180 + 370 + 20） */
     top: auto;
-    bottom: 510px;
+    bottom: 570px;
     height: 110px;
 }
 
 .layout-portrait .answer-now-callout {
     /* 「答えて！」は回答セルの右上あたりに寄せる */
     top: auto;
-    bottom: 640px;
+    bottom: 700px;
     right: 4%;
 }
 
@@ -605,11 +607,11 @@
 }
 
 /* 縦画面のカメオ再配置 — 下部アンカーの入力クラスタ
-   （ボタン: bottom 180-480 / セル: bottom 510-620 / 答えて!: bottom 640-720 x471-691 /
+   （ボタン: bottom 180-550 / セル: bottom 570-680 / 答えて!: bottom 700-780 x471-691 /
      カウントダウン: 9:16 時 bottom 790-960 x551-693）を避けた空きゾーンへ散らす */
-.layout-portrait .cameo-slot--v0 { left: 320px; bottom: 660px; }
-.layout-portrait .cameo-slot--v1 { left: 35px;  bottom: 650px; }
-.layout-portrait .cameo-slot--v2 { left: 150px; bottom: 780px; }
-.layout-portrait .cameo-slot--v3 { right: 10px; bottom: 740px; }
-.layout-portrait .cameo-slot--v4 { right: auto; left: 380px; bottom: 850px; }
+.layout-portrait .cameo-slot--v0 { left: 320px; bottom: 710px; }
+.layout-portrait .cameo-slot--v1 { left: 35px;  bottom: 700px; }
+.layout-portrait .cameo-slot--v2 { left: 150px; bottom: 820px; }
+.layout-portrait .cameo-slot--v3 { right: 10px; bottom: 830px; }
+.layout-portrait .cameo-slot--v4 { right: auto; left: 380px; bottom: 900px; }
 
