@@ -106,7 +106,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement class="start-button-wrap" style="top: 5%;">
+        <ui:VisualElement class="start-button-wrap">
             <ui:Label text="▼ TAP TO START ▼" class="start-banner" style="display: none;"/>
             <ui:Button name="start-button" text="▶  START!" class="start-button start-button--festive"/>
         </ui:VisualElement>

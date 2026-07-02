@@ -24,6 +24,10 @@ namespace EDMQuiz
             // BGM 未再生なら最初のタップ/クリックで開始（WebGL 自動再生制約対応）
             if (AudioManager.Instance == null || !AudioManager.Instance.IsBgmPlaying)
                 _root.RegisterCallback<PointerDownEvent>(OnFirstInteraction);
+
+            // ビューポートのアスペクト比に応じて .layout-portrait / .layout-landscape を切替
+            // （PanelSettings も渡し、縦=幅基準 / 横=高さ基準のスケーリング切替を有効化）
+            ResponsiveLayout.Attach(_root, _uiDocument.panelSettings);
         }
 
         void OnDisable()

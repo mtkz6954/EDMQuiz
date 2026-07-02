@@ -99,12 +99,17 @@ namespace EDMQuiz
             if (_confirmButton   != null) _confirmButton.clicked   += OnConfirmPressed;
 
             // ルートにキーボードイベントを登録（数字 1-8 でひらがなボタンを押す）
-            if (UnityEngine.SystemInfo.deviceType != UnityEngine.DeviceType.Handheld)
+            // タッチ主体のデバイスでは登録しない（モバイル WebGL ブラウザ含む）
+            if (!ResponsiveLayout.IsTouchPrimary())
             {
                 _root.focusable = true;
                 _root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
                 _root.Focus();
             }
+
+            // ビューポートのアスペクト比に応じて .layout-portrait / .layout-landscape を切替
+            // （PanelSettings も渡し、縦=幅基準 / 横=高さ基準のスケーリング切替を有効化）
+            ResponsiveLayout.Attach(_root, _uiDocument.panelSettings);
 
             InitCharacterStrip();
             BuildBeatDots();
@@ -253,7 +258,7 @@ namespace EDMQuiz
                     btn.AddToClassList("hiragana-button--wide");
 
                 // キーボードショートカット番号バッジ（PC のみ表示）
-                if (UnityEngine.SystemInfo.deviceType != UnityEngine.DeviceType.Handheld)
+                if (!ResponsiveLayout.IsTouchPrimary())
                 {
                     var numberBadge = new Label(keypadNumber.ToString());
                     numberBadge.AddToClassList("hiragana-number-badge");

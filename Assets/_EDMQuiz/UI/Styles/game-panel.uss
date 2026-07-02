@@ -34,7 +34,9 @@
     top: 62px;
     left: 3%;
     right: 3%;
-    height: 200px;
+    /* 従来 UXML インラインで 151px 指定だったものを USS へ移動
+       （縦画面では .layout-portrait で拡大する） */
+    height: 151px;
     flex-direction: row;
     align-items: center;
     padding: 14px 36px;
@@ -71,7 +73,8 @@
 
 .instruction-label {
     position: absolute;
-    top: 234px;
+    /* 従来 UXML インラインで 198px 指定だったものを USS へ移動 */
+    top: 198px;
     left: 24px;
     width: 260px;
     height: 64px;
@@ -456,3 +459,157 @@
     border-radius: 20px;
     border-width: 0;
 }
+
+/* ================================================================
+   Landscape overrides — PC 横長表示（フルスクリーン or 横長 iframe）
+   ResponsiveLayout.cs により root に .layout-landscape が付与される。
+   - 参照解像度 720x1280 + m_Match: 1 (高さ基準) のため、
+     ref space の width はビューポート幅 / scale で広がる（例: 1280x720 → ref 2275x1280）
+   - そのため left:50% は実画面中央に対応するので、margin-left + width 固定で中央寄せできる
+================================================================ */
+
+.layout-landscape .question-panel {
+    /* 横長で全幅に伸びるのを防ぎ、画面中央に固定幅で配置 */
+    left: 50%;
+    right: auto;
+    width: 720px;
+    margin-left: -360px;
+}
+
+.layout-landscape .hiragana-buttons {
+    /* ボタン群も中央 720px に集約 */
+    left: 50%;
+    right: auto;
+    width: 720px;
+    margin-left: -360px;
+}
+
+.layout-landscape .answer-cells {
+    /* answer-cells は左右 0 で flex 中央寄せ済み → ref space 中央へ追従するので OK */
+    left: 0;
+    right: 0;
+}
+
+.layout-landscape .countdown-widget {
+    /* 右端 4% (= ref 2185 ≒ 実 1230px) は遠すぎるので中央パネルの右隣へ */
+    right: auto;
+    left: 50%;
+    margin-left: 380px;
+}
+
+.layout-landscape .answer-now-callout {
+    /* countdown-widget と同様、中央パネルの右隣へ */
+    right: auto;
+    left: 50%;
+    margin-left: 380px;
+}
+
+.layout-landscape .progress-counter {
+    /* 左端 24px (= 実 13.5px) のままだと遠すぎるので中央パネル左肩へ */
+    left: 50%;
+    margin-left: -360px;
+}
+
+.layout-landscape .instruction-label {
+    /* 中央パネルの左隣にずらす */
+    left: 50%;
+    margin-left: -340px;
+}
+
+.layout-landscape .control-buttons {
+    /* backspace 等のコントロール群も中央パネル左下へ */
+    left: 50%;
+    margin-left: -360px;
+}
+
+.layout-landscape .characters-strip {
+    /* 横長では左右に余裕があるので、デフォルト % 配置でキャラが横に広がる。
+       追加調整は不要だが、底辺を少し上げて見切れを防ぐ */
+    bottom: 0;
+}
+
+/* ================================================================
+   Portrait overrides — 縦画面（スマホ実機・PC の縦キャンバス共通。
+   ResponsiveLayout が root に .layout-portrait を付与）
+   方針:
+   - 入力ボタン群を親指の届く画面下部へ寄せ、タップしやすいサイズへ拡大
+   - 回答セルはボタン群の直上に配置して視線移動を最小化
+   - 縦画面では match=0（幅基準）のため ref 幅は常に 720px。
+     縦長端末では ref 高さが 1280 以上に伸びる → bottom 基準で配置する
+   - PC 横画面（.layout-landscape）には一切影響しない
+================================================================ */
+
+.layout-portrait .question-panel {
+    /* 縦画面は 1 行の文字数が少なく行数が増えるため、長文が収まる高さへ拡大 */
+    height: 240px;
+}
+
+.layout-portrait .instruction-label {
+    /* 拡大した問題パネルの下端に追従（パネル下端 302px の少し上に重ねる） */
+    top: 288px;
+}
+
+.layout-portrait .countdown-widget {
+    /* 拡大した問題パネルと被らない位置へ */
+    top: 320px;
+}
+
+.layout-portrait .hiragana-buttons {
+    /* 拡大ボタン 3 行分の高さを確保（92px × 3 + 余白）
+       下部アンカーに切替（キャラ帯のすぐ上） */
+    height: 300px;
+    top: auto;
+    bottom: 180px;
+}
+
+.layout-portrait .hiragana-key-row {
+    height: 92px;
+}
+
+.layout-portrait .hiragana-button {
+    width: 190px;
+    height: 84px;
+    margin: 4px 8px;
+    font-size: 52px;
+}
+
+.layout-portrait .hiragana-button--wide {
+    width: 480px;
+    height: 84px;
+}
+
+.layout-portrait .answer-cell {
+    width: 100px;
+    height: 100px;
+    font-size: 56px;
+}
+
+.layout-portrait .answer-cells {
+    /* ボタン群の直上へ（bottom: 180 + 300 + 30） */
+    top: auto;
+    bottom: 510px;
+    height: 110px;
+}
+
+.layout-portrait .answer-now-callout {
+    /* 「答えて！」は回答セルの右上あたりに寄せる */
+    top: auto;
+    bottom: 640px;
+    right: 4%;
+}
+
+.layout-portrait .retry-button {
+    min-width: 320px;
+    height: 96px;
+    font-size: 36px;
+}
+
+/* 縦画面のカメオ再配置 — 下部アンカーの入力クラスタ
+   （ボタン: bottom 180-480 / セル: bottom 510-620 / 答えて!: bottom 640-720 x471-691 /
+     カウントダウン: 9:16 時 bottom 790-960 x551-693）を避けた空きゾーンへ散らす */
+.layout-portrait .cameo-slot--v0 { left: 320px; bottom: 660px; }
+.layout-portrait .cameo-slot--v1 { left: 35px;  bottom: 650px; }
+.layout-portrait .cameo-slot--v2 { left: 150px; bottom: 780px; }
+.layout-portrait .cameo-slot--v3 { right: 10px; bottom: 740px; }
+.layout-portrait .cameo-slot--v4 { right: auto; left: 380px; bottom: 850px; }
+

@@ -441,6 +441,9 @@
     flex-direction: column;
     align-items: center;
     margin-top: 0;
+    /* 従来 UXML インラインで top:5% 指定だったものを USS へ移動
+       （縦画面では .layout-portrait でさらに下げる） */
+    top: 5%;
 }
 
 .start-banner {
@@ -490,4 +493,74 @@
 .start-button:active {
     scale: 0.95 0.95;
     background-color: rgb(240, 200, 0);
+}
+
+/* ────────────────────────────────────────────────────────
+   6. Touch overrides — スマホ / タブレット
+   (縦画面共通 — ResponsiveLayout が root に .layout-portrait を付与。PC横画面には影響しない)
+   小さめの説明文字と START ボタンをスマホでも読める / 押せるサイズへ拡大
+────────────────────────────────────────────────────────── */
+
+.layout-portrait .catch-copy--ribbon {
+    font-size: 24px;
+    padding: 6px 22px;
+}
+
+.layout-portrait .rules-card {
+    max-width: 620px;
+    padding: 14px 22px;
+}
+
+.layout-portrait .rules-card__title {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.layout-portrait .quick-note {
+    font-size: 18px;
+    padding: 4px 14px;
+}
+
+.layout-portrait .rule-badge-wrap {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    border-radius: 16px;
+}
+
+.layout-portrait .rule-badge-num {
+    font-size: 17px;
+}
+
+.layout-portrait .rules-card__rule {
+    font-size: 20px;
+}
+
+.layout-portrait .rules-card__controls-title {
+    font-size: 22px;
+}
+
+.layout-portrait .control-chip__text {
+    font-size: 20px;
+}
+
+.layout-portrait .rules-card__controls-hint {
+    font-size: 16px;
+}
+
+.layout-portrait .start-button-wrap {
+    /* 縦画面ではあそびかたカードとの間を空け、画面下寄り（ステージ床帯の上）へ */
+    top: 14%;
+}
+
+.layout-portrait .start-banner {
+    font-size: 20px;
+}
+
+.layout-portrait .start-button {
+    min-width: 340px;
+    height: 88px;
+    font-size: 40px;
+    border-radius: 44px;
 }

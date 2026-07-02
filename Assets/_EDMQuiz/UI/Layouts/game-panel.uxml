@@ -3,12 +3,12 @@
     <Style src="project://database/Assets/_EDMQuiz/UI/Styles/game-panel.uss?fileID=7433441132597879392&amp;guid=fe70c63b014aa1444a66a9ef005b7e09&amp;type=3#game-panel"/>
     <ui:VisualElement name="background-panel" class="background-panel">
         <ui:VisualElement name="stage-light-wash" picking-mode="Ignore" class="stage-light-wash"/>
-        <ui:VisualElement name="question-panel" class="question-panel" style="height: 151px;">
+        <ui:VisualElement name="question-panel" class="question-panel">
             <ui:Label name="question-number-badge" text="01" class="question-number-badge"/>
             <ui:Label name="question-text" text="" enable-rich-text="true" class="question-text"/>
         </ui:VisualElement>
         <ui:Label name="progress-counter" text="01/05" class="progress-counter" style="overflow: visible;"/>
-        <ui:Label name="instruction-label" text="のってこたえろ！" class="instruction-label" style="top: 198px;"/>
+        <ui:Label name="instruction-label" text="のってこたえろ！" class="instruction-label"/>
         <ui:VisualElement name="answer-cells" class="answer-cells">
             <ui:Label text="" class="answer-cell answer-cell--c0"/>
             <ui:Label text="" class="answer-cell answer-cell--c1"/>
