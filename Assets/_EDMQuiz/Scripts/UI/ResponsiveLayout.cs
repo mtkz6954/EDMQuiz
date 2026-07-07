@@ -7,20 +7,25 @@ namespace EDMQuiz
     /// .layout-portrait / .layout-landscape クラスと、タッチ主体デバイス向けの
     /// .layout-touch クラスを付与するヘルパー。
     ///
-    /// USS 側で `.layout-landscape .question-panel { ... }` や
-    /// `.layout-touch.layout-portrait .hiragana-buttons { ... }` のように
+    /// USS 側で `.layout-portrait .hiragana-buttons { ... }` のように
     /// セレクタを書くことで、レイアウトを切り替えられる。
     ///
-    /// また PanelSettings を渡すと、縦画面では幅基準 (match=0)、
-    /// 横画面では高さ基準 (match=1) にスケーリングを動的に切り替える。
-    /// これによりスマホの縦長画面 (9:16 より縦長、例 19.5:9) でも
-    /// 参照幅 720px が必ず画面内に収まり、横方向のはみ出しを防ぐ。
+    /// また PanelSettings を渡すと、参照解像度を画面の向きで切り替える:
+    /// - 縦画面: 720x1280（スマホ縦デザインの参照空間）
+    /// - 横画面: 1200x800（5月時点の PC 横型デザインの参照空間）
+    /// どちらも幅基準 (match=0) なので、縦長スマホ (19.5:9 等) でも
+    /// 参照幅が必ず画面内に収まり、横方向のはみ出しを防ぐ。
     /// </summary>
     public static class ResponsiveLayout
     {
         public const string PortraitClass  = "layout-portrait";
         public const string LandscapeClass = "layout-landscape";
         public const string TouchClass     = "layout-touch";
+
+        /// <summary>縦画面の参照解像度（スマホ縦デザイン基準）</summary>
+        private static readonly UnityEngine.Vector2Int PortraitReference  = new(720, 1280);
+        /// <summary>横画面の参照解像度（旧 PC 横型デザイン基準）</summary>
+        private static readonly UnityEngine.Vector2Int LandscapeReference = new(1200, 800);
 
         /// <summary>
         /// エディタでスマホ向けレイアウトを検証するための強制フラグ。
@@ -60,15 +65,18 @@ namespace EDMQuiz
             root.EnableInClassList(PortraitClass, !isLandscape);
             root.EnableInClassList(TouchClass, IsTouchPrimary());
 
-            // 縦画面 = 幅基準 / 横画面 = 高さ基準。
-            // .layout-landscape 系オーバーライドは match=1 前提の座標なので、横では必ず 1 に戻す。
+            // 画面の向きで参照解像度を切り替える（常に幅基準 match=0）。
+            // 横画面は旧横型デザインの 1200x800 に戻すことで、base ルールが
+            // そのまま以前の PC フルスクリーン見た目を再現する。
             // 注意: PanelSettings はアセットなので、エディタ Play 中の変更は保存され得るが、
             //       起動時に必ずここで正しい値へ上書きされるため実害はない。
             if (panelSettings != null)
             {
-                float targetMatch = isLandscape ? 1f : 0f;
-                if (!UnityEngine.Mathf.Approximately(panelSettings.match, targetMatch))
-                    panelSettings.match = targetMatch;
+                var targetReference = isLandscape ? LandscapeReference : PortraitReference;
+                if (panelSettings.referenceResolution != targetReference)
+                    panelSettings.referenceResolution = targetReference;
+                if (!UnityEngine.Mathf.Approximately(panelSettings.match, 0f))
+                    panelSettings.match = 0f;
             }
         }
 

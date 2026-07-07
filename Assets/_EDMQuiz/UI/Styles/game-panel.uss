@@ -461,72 +461,12 @@
 }
 
 /* ================================================================
-   Landscape overrides — PC 横長表示（フルスクリーン or 横長 iframe）
-   ResponsiveLayout.cs により root に .layout-landscape が付与される。
-   - 参照解像度 720x1280 + m_Match: 1 (高さ基準) のため、
-     ref space の width はビューポート幅 / scale で広がる（例: 1280x720 → ref 2275x1280）
-   - そのため left:50% は実画面中央に対応するので、margin-left + width 固定で中央寄せできる
+   Landscape — PC 横長表示（フルスクリーン or 横長 iframe）
+   ResponsiveLayout.cs が横画面では PanelSettings.referenceResolution を
+   1200x800（5月時点の横型デザインの参照空間）へ切り替えるため、
+   上記の base ルールがそのまま旧横型レイアウトとして機能する。
+   横画面専用のオーバーライドは不要（.layout-landscape は現在未使用）。
 ================================================================ */
-
-.layout-landscape .question-panel {
-    /* 横長で全幅に伸びるのを防ぎ、画面中央に固定幅で配置 */
-    left: 50%;
-    right: auto;
-    width: 720px;
-    margin-left: -360px;
-}
-
-.layout-landscape .hiragana-buttons {
-    /* ボタン群も中央 720px に集約 */
-    left: 50%;
-    right: auto;
-    width: 720px;
-    margin-left: -360px;
-}
-
-.layout-landscape .answer-cells {
-    /* answer-cells は左右 0 で flex 中央寄せ済み → ref space 中央へ追従するので OK */
-    left: 0;
-    right: 0;
-}
-
-.layout-landscape .countdown-widget {
-    /* 右端 4% (= ref 2185 ≒ 実 1230px) は遠すぎるので中央パネルの右隣へ */
-    right: auto;
-    left: 50%;
-    margin-left: 380px;
-}
-
-.layout-landscape .answer-now-callout {
-    /* countdown-widget と同様、中央パネルの右隣へ */
-    right: auto;
-    left: 50%;
-    margin-left: 380px;
-}
-
-.layout-landscape .progress-counter {
-    /* 左端 24px (= 実 13.5px) のままだと遠すぎるので中央パネル左肩へ */
-    left: 50%;
-    margin-left: -360px;
-}
-
-.layout-landscape .instruction-label {
-    /* 中央パネルの左隣にずらす */
-    left: 50%;
-    margin-left: -340px;
-}
-
-.layout-landscape .control-buttons {
-    /* backspace 等のコントロール群も中央パネル左下へ */
-    left: 50%;
-    margin-left: -360px;
-}
-
-.layout-landscape .characters-strip {
-    /* 横長では左右に余裕があるので、デフォルト % 配置でキャラが横に広がる。
-       追加調整は不要だが、底辺を少し上げて見切れを防ぐ */
-    bottom: 0;
-}
 
 /* ================================================================
    Portrait overrides — 縦画面（スマホ実機・PC の縦キャンバス共通。
