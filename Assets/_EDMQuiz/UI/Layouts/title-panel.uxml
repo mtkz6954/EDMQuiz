@@ -37,14 +37,14 @@
             <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--04"/>
             <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--05"/>
             <ui:VisualElement picking-mode="Ignore" class="title-streamer title-streamer--06"/>
-            <ui:Label picking-mode="Ignore" text="✨" class="title-sparkle title-sparkle--01"/>
-            <ui:Label picking-mode="Ignore" text="⚡" class="title-sparkle title-sparkle--02"/>
-            <ui:Label picking-mode="Ignore" text="🎉" class="title-sparkle title-sparkle--03"/>
-            <ui:Label picking-mode="Ignore" text="🎊" class="title-sparkle title-sparkle--04"/>
-            <ui:Label picking-mode="Ignore" text="🎈" class="title-sparkle title-sparkle--05"/>
+            <ui:Label picking-mode="Ignore" text="♪" class="title-sparkle title-sparkle--01"/>
+            <ui:Label picking-mode="Ignore" text="♯" class="title-sparkle title-sparkle--02"/>
+            <ui:Label picking-mode="Ignore" text="★" class="title-sparkle title-sparkle--03"/>
+            <ui:Label picking-mode="Ignore" text="☆" class="title-sparkle title-sparkle--04"/>
+            <ui:Label picking-mode="Ignore" text="●" class="title-sparkle title-sparkle--05"/>
             <ui:Label picking-mode="Ignore" text="★" class="title-sparkle title-sparkle--06"/>
-            <ui:Label picking-mode="Ignore" text="✨" class="title-sparkle title-sparkle--07"/>
-            <ui:Label picking-mode="Ignore" text="⚡" class="title-sparkle title-sparkle--08"/>
+            <ui:Label picking-mode="Ignore" text="♪" class="title-sparkle title-sparkle--07"/>
+            <ui:Label picking-mode="Ignore" text="♯" class="title-sparkle title-sparkle--08"/>
         </ui:VisualElement>
         <ui:VisualElement class="title-area">
             <ui:VisualElement class="title-row title-row--main">
@@ -68,8 +68,8 @@
         <ui:Label enable-rich-text="true" text="&lt;color=#FF3C8E&gt;リズム&lt;/color&gt;にのって 答えよ！" class="catch-copy catch-copy--ribbon"/>
         <ui:VisualElement name="rules-card" class="rules-card rules-card--party" style="top: 2%;">
             <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--tl"/>
-            <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--tr"/>
-            <ui:Label picking-mode="Ignore" text="✨" class="rules-card-corner rules-card-corner--bl"/>
+            <ui:Label picking-mode="Ignore" text="☆" class="rules-card-corner rules-card-corner--tr"/>
+            <ui:Label picking-mode="Ignore" text="☆" class="rules-card-corner rules-card-corner--bl"/>
             <ui:Label picking-mode="Ignore" text="★" class="rules-card-corner rules-card-corner--br"/>
             <ui:Label text="★  あそびかた" class="rules-card__title"/>
             <ui:VisualElement name="VisualElement" class="rules-card__quick-row" style="display: none;">
@@ -96,19 +96,19 @@
                 <ui:Label enable-rich-text="true" text="盛り上がりの最高潮でクイズに回答しよう！" class="rules-card__rule"/>
             </ui:VisualElement>
             <ui:VisualElement class="rules-card__divider"/>
-            <ui:Label text="▶  そうさほうほう" class="rules-card__controls-title"/>
+            <ui:Label text="♪  そうさほうほう" class="rules-card__controls-title"/>
             <ui:VisualElement class="controls-chips">
                 <ui:VisualElement class="control-chip">
-                    <ui:Label text="📱 スマホ：ボタンをタップ" class="control-chip__text"/>
+                    <ui:Label text="スマホ：ボタンをタップ" class="control-chip__text"/>
                 </ui:VisualElement>
                 <ui:VisualElement class="control-chip">
-                    <ui:Label text="⌨ PC：数字キー（１〜9）" class="control-chip__text"/>
+                    <ui:Label text="PC：数字キー（１〜9）" class="control-chip__text"/>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="start-button-wrap">
             <ui:Label text="▼ TAP TO START ▼" class="start-banner" style="display: none;"/>
-            <ui:Button name="start-button" text="▶  START!" class="start-button start-button--festive"/>
+            <ui:Button name="start-button" text="♪  START!" class="start-button start-button--festive"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
